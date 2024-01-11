@@ -41,7 +41,7 @@
             android:id="@+id/textView3"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:text="하차"
+            android:text="승차"
             android:textSize="18sp"
             android:textColor="@color/busspot_gray"
             android:fontFamily="@font/aldrich"/>
@@ -67,7 +67,7 @@
             android:id="@+id/textView4"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:text="승차"
+            android:text="하차"
             android:textSize="18sp"
             android:textColor="@color/busspot_gray"
             android:fontFamily="@font/aldrich"/>

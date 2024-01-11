@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="back">#ECECEC</color>
+    <color name="login_back">#D9D9D9</color>
+    <color name="busspot_gray">#8B8B8B</color>
+    <color name="busspot_num_gray">#595959</color>
+    <color name="deep_gray">#5F5F5F</color>
+    <color name="light_gray">#C9C9C9</color>
+    <color name="bus_green">#00C200</color>
+    <color name="bus_blue">#0014C6</color>
 </resources>
