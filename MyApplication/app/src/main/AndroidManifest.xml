@@ -13,6 +13,21 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".NoReservation"
+            android:exported="false" />
+        <activity
+            android:name=".GetOffBusStop"
+            android:exported="false" />
+        <activity
+            android:name=".BusSelection"
+            android:exported="false" />
+        <activity
+            android:name=".BoardingBusStop"
+            android:exported="false" />
+        <activity
+            android:name=".Reserved"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
