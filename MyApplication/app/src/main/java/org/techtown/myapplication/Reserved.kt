@@ -6,12 +6,12 @@ import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.techtown.myapplication.databinding.ActivityMainBinding
+import org.techtown.myapplication.databinding.ActivityReservedBinding
 
 class Reserved : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val binding = ActivityMainBinding.inflate(layoutInflater);
+        val binding = ActivityReservedBinding.inflate(layoutInflater);
         setContentView(binding.root)
 
         val menuList = arrayListOf(

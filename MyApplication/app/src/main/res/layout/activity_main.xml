@@ -32,7 +32,7 @@
         app:srcCompat="@drawable/bus" />
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/membershipNumber"
         android:layout_width="380dp"
         android:layout_height="44dp"
         android:layout_marginStart="16dp"
@@ -48,7 +48,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/membershipNumber"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -61,7 +61,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_start"
+        android:id="@+id/startButton"
         android:layout_width="150dp"
         android:layout_height="49dp"
         android:layout_marginTop="24dp"
@@ -74,6 +74,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password" />
+        app:layout_constraintTop_toBottomOf="@+id/membershipNumber" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
