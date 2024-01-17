@@ -1,5 +1,6 @@
 package org.techtown.myapplication
 
+import android.util.Log
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -11,7 +12,7 @@ class LoginManager {
 
     init {
         val retrofit = Retrofit.Builder()
-            .baseUrl("BASE_URL_HERE")  // 여기에 서버의 base URL을 넣어주세요
+            .baseUrl("https://api.example.com")  // 여기에 서버의 base URL을 넣어주세요(현재 예시 주소 넣어놓음)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -19,23 +20,14 @@ class LoginManager {
     }
 
     fun loginUser(loginId: String, callback: LoginCallback) {
-        val request = LoginRequest(loginId)
-
-        userService.loginUser(request).enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if (response.isSuccessful) {
-                    // 로그인 성공 시
-                    callback.onLoginSuccess()
-                } else {
-                    // 로그인 실패 시
-                    callback.onLoginFailure()
-                }
-            }
-
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                // 네트워크 통신 실패 시 처리
-                callback.onLoginFailure()
-            }
-        })
+        // 서버 통신이 아닌 단순한 예시로 로그인 성공 여부를 검사
+        if (loginId == "1234") {
+            // 로그인 성공 시
+            callback.onLoginSuccess()
+        } else {
+            // 로그인 실패 시
+            Log.d("LoginManager", "로그인 실패. 입력된 회원번호: $loginId")
+            callback.onLoginFailure()
+        }
     }
 }

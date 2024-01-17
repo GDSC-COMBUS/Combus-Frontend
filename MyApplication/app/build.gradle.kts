@@ -56,4 +56,5 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0") //build.gradle(Module: app) 파일에 Retrofit2 의존성을 추가(로그인 구현을 위해)
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0") //build.gradle(Module: app) 파일에 Retrofit2 의존성을 추가(로그인 구현을 위해)
 
+    implementation ("com.google.android.gms:play-services-maps:17.0.1") //구글 지도
 }
