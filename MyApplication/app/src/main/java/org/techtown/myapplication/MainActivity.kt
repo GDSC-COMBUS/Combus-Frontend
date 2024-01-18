@@ -1,32 +1,47 @@
 package org.techtown.myapplication
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import org.techtown.myapplication.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
-    // 전역 변수로 바인딩 객체 선언
-    private var mBinding: ActivityMainBinding? = null
-    // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
-    private val binding get() = mBinding!!
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 기존 setContentView 를 제거해주시고..
-//        setContentView(R.layout.activity_main)
-
-        // 자동 생성된 뷰 바인딩 클래스에서의 inflate라는 메서드를 활용해서
-        // 액티비티에서 사용할 바인딩 클래스의 인스턴스 생성
-        mBinding = ActivityMainBinding.inflate(layoutInflater)
-
-        // getRoot 메서드로 레이아웃 내부의 최상위 위치 뷰의
-        // 인스턴스를 활용하여 생성된 뷰를 액티비티에 표시 합니다.
+        val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
 
+        val loginManager = LoginManager()
+        val membershipNumberEditText = findViewById<EditText>(R.id.membershipNumber)
+
+        binding.startButton.setOnClickListener {
+            val membershipNumber = membershipNumberEditText.text.toString()
+
+            loginManager.loginUser(membershipNumber, object : LoginCallback {
+                override fun onLoginSuccess() {
+                    val status:String =
+                    // 로그인이 성공한 경우에만 예약 내역 조회 시작
+                    if ( == "1234") {
+                        // 화면 전환 로직 추가
+                        val intent = Intent(this@MainActivity, Reserved::class.java)
+                        startActivity(intent)
+                    } else {
+                        // 로그인 실패 시 토스트 메시지 띄우기
+                        onLoginFailure()
+                    }
+                }
+
+                override fun onLoginFailure() {
+                    // 로그인 실패 시 토스트 메시지 띄우기
+                    showToast("로그인에 실패했습니다. 올바른 회원번호를 입력해주세요.") //UserService.kt에 있는 거에서 긁어와서 띄우기
+                }
+            })
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

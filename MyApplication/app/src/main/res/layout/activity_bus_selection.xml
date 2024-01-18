@@ -5,6 +5,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/menu3"
+        android:layout_width="126dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="메뉴"
+        android:textSize="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.087"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.931" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="384dp"
+        android:layout_height="87dp"
+        android:layout_marginTop="628dp"
+        android:background="@drawable/radius"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.481"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="312dp"
+        android:layout_height="277dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.979"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.731"></LinearLayout>
+
+    <EditText
+        android:id="@+id/searchBox2"
+        android:layout_width="300dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="48dp"
+        android:background="@drawable/radius"
+        android:backgroundTint="#EFEFEF"
+        android:ems="10"
+        android:inputType="text"
+        android:text="        탑승할 버스를 입력해주세요"
+        android:textColor="#827B7B"
+        android:textColorHint="#827B7B"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView2"
         android:layout_width="342dp"
@@ -35,15 +92,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/bus_black" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="52dp"
-        android:text="탑승 정류장 이름"
-        android:textSize="20sp"
-        android:textStyle="bold"
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="30dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="56dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/search" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
