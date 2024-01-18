@@ -6,7 +6,7 @@ import retrofit2.http.POST
 
 interface UserService {
     @POST("users/login")
-    fun loginUser(@Body request: LoginRequest): Call<LoginResponse>
+    suspend fun loginUser(@Body request: LoginRequest): LoginResponse
 }
 
 data class LoginRequest(val loginId: String)

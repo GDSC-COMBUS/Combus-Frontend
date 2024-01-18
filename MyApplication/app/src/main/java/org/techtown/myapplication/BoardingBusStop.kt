@@ -104,7 +104,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
         try {
             val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
 
-            // 현재 위치가 있을 경우 지도를 해당 위치로 이동
+            // 현재 위치가 있을 경우 지도를 해당 위치로 이동(백에 Post로 보내기)
             if (location != null) {
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
