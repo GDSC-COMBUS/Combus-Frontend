@@ -7,166 +7,177 @@
     android:orientation="vertical"
     tools:context=".busstop_detail">
 
-    <LinearLayout
-        android:id="@+id/busstop_linear"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/back"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:background="#00000000"
-            app:srcCompat="@drawable/back" />
-
-        <TextView
-            android:id="@+id/txt_busstop_num"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:fontFamily="@font/aldrich"
-            android:gravity="center"
-            android:text="08489"
-            android:textColor="@color/deep_gray"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/txt_busstop_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/aldrich"
-            android:gravity="center"
-            android:text="성신여대정문앞"
-            android:textColor="@color/black"
-            android:textSize="23sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/txt_busstop_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/aldrich"
-            android:gravity="center"
-            android:text="성신여대평생교육원 방면"
-            android:textColor="@color/busspot_num_gray"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/txt_busstop_book_num"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:fontFamily="@font/aldrich"
-            android:gravity="center"
-            android:text="예약 수 3명"
-            android:textColor="@color/busspot_num_gray"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/txt_busstop_out_num"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/aldrich"
-            android:gravity="center"
-            android:layout_marginBottom="40dp"
-            android:text="하차 수 1명"
-            android:textColor="@color/busspot_num_gray"
-            android:textSize="18sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/detail_info_linear"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/busstop_linear">
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
-            android:layout_marginLeft="21dp"
-            android:layout_marginRight="20dp"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView17"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/busstop_linear"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="예약정보"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/aldrich"/>
+                android:background="@color/back"
+                android:orientation="vertical">
 
-            <View
-                android:id="@+id/view5"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#00000000"
+                    app:srcCompat="@drawable/back" />
 
-            <TextView
-                android:id="@+id/txt_busstop_book_infor_num"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/txt_busstop_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/aldrich"
+                    android:gravity="center"
+                    android:text="08489"
+                    android:textColor="@color/deep_gray"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/txt_busstop_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/aldrich"
+                    android:gravity="center"
+                    android:text="성신여대정문앞"
+                    android:textColor="@color/black"
+                    android:textSize="23sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txt_busstop_next"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/aldrich"
+                    android:gravity="center"
+                    android:text="성신여대평생교육원 방면"
+                    android:textColor="@color/busspot_num_gray"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/txt_busstop_book_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/aldrich"
+                    android:gravity="center"
+                    android:text="예약 수 명"
+                    android:textColor="@color/busspot_num_gray"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_busstop_out_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:fontFamily="@font/aldrich"
+                    android:gravity="center"
+                    android:text="하차 수 명"
+                    android:textColor="@color/busspot_num_gray"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/detail_info_linear"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="휠체어 1명 | 시각장애인 2명"
-                android:fontFamily="@font/aldrich"
-                android:textSize="15sp"
-                android:textColor="@color/busspot_num_gray"/>
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="21dp"
+                    android:layout_marginTop="21dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView17"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/aldrich"
+                        android:text="예약정보"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@+id/view5"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/txt_busstop_book_infor_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/aldrich"
+                        android:text="휠체어 명 | 시각장애인 명"
+                        android:textColor="@color/busspot_num_gray"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/busstop_book_recycle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="21dp"
+                    android:layout_marginTop="21dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView19"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/aldrich"
+                        android:text="하차 정보"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@+id/view6"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/txt_busstop_out_infor_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/aldrich"
+                        android:text="시각장애인 명"
+                        android:textColor="@color/busspot_num_gray"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/busstop_out_recycle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"/>
+            </LinearLayout>
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/busstop_book_recycle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="21dp"
-            android:layout_marginTop="21dp">
-
-            <TextView
-                android:id="@+id/textView19"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="하차 정보"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/aldrich"/>
-
-            <View
-                android:id="@+id/view6"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/txt_busstop_out_infor_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="시각장애인 1명"
-                android:fontFamily="@font/aldrich"
-                android:textSize="15sp"
-                android:textColor="@color/busspot_num_gray"/>
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/busstop_out_recycle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
