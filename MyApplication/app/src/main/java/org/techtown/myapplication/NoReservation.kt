@@ -9,9 +9,6 @@ import org.techtown.myapplication.databinding.ActivityNoReservationBinding
 
 class NoReservation : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_no_reservation)
-
         super.onCreate(savedInstanceState)
         val binding = ActivityNoReservationBinding.inflate(layoutInflater);
         setContentView(binding.root)

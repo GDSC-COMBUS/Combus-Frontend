@@ -1,29 +1,34 @@
 package org.techtown.myapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import org.techtown.myapplication.databinding.ActivityMainBinding
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import org.techtown.myapplication.Retrofit.ReservationData
 import org.techtown.myapplication.databinding.ActivityReservedBinding
 
 class Reserved : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityReservedBinding.inflate(layoutInflater);
+        val binding = ActivityReservedBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val menuList = arrayListOf(
-            Reservation("일시", "2023.05.23"),
-            Reservation("탑승 정류장", "돈암사거리.성신여대입구(중), 삼선교.한성대학교(중)방면"),
-            Reservation("버스 번호", "102번"),
-            Reservation("하차 정류장", "혜화동로터리.여운형활동터(중), 명륜3가.성대입구(중) 방면"),
-            Reservation("승차 여부", "N")
-        )
+//        a = findViewById(R.id.btn_left);
+//        b = findViewById(R.id.btn_center);
+//        c = findViewById(R.id.btn_right);
+//
+//        btn_center.bringToFront();
+//        btn_left.bringToFront();
 
-        //바인딩 오류
-        //binding.reLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        //RecyclerView.Adapter = ReservationAdapter()
+        // Intent에서 예약 정보를 가져옵니다
+        val reservationData = intent.getParcelableExtra<ReservationData>("reservationData")
+
+        if (reservationData != null) {
+            // 가져온 예약 정보를 TextView에 표시합니다
+            findViewById<TextView>(R.id.createdAt).text = reservationData.createdAt
+            findViewById<TextView>(R.id.createdAt).text = reservationData.boardingStop
+            findViewById<TextView>(R.id.busId).text = reservationData.busId.toString()
+            findViewById<TextView>(R.id.dropStop).text = reservationData.dropStop.toString()
+            findViewById<TextView>(R.id.status).text = reservationData.status
+        }
     }
 }

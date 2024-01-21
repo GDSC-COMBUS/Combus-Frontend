@@ -28,6 +28,8 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
         val binding = ActivityBoardingBusStopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
