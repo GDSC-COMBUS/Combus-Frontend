@@ -59,4 +59,12 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.8.0")
 
     implementation ("com.google.android.gms:play-services-maps:17.0.1") //구글 지도
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2") //Retrofit의 Call 객체를 사용할 때, 비동기 호출을 위해 await() 함수를 사용하려면 코루틴에 대한 의존성을 추가해야 합니다. await() 함수는 kotlinx.coroutines 패키지에 정의되어 있습니다.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2") //await() 함수를 사용하려면 Kotlin 코루틴과 관련된 라이브러리 추가
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+
+    // Google Map
+    implementation ("com.google.android.gms:play-services-location:17.0.0")
+
+    // implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-tasks:1.5.2") // 수정된 부분: kotlinx-coroutines-tasks는 사용되지 않아 주석 처리
 }
