@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/searchBox"
+        android:id="@+id/search"
         android:layout_width="300dp"
         android:layout_height="44dp"
         android:layout_marginStart="84dp"
@@ -15,7 +15,6 @@
         android:backgroundTint="#EFEFEF"
         android:ems="10"
         android:inputType="text"
-        android:text="        승차 정류장을 입력해주세요"
         android:textColor="#827B7B"
         android:textColorHint="#827B7B"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,6 +61,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/boardingStopList"
         android:layout_width="331dp"
         android:layout_height="346dp"
         android:orientation="vertical"
@@ -70,6 +70,33 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.857"></LinearLayout>
+        app:layout_constraintVertical_bias="0.857">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- 추가: CardView로 감싼 레이아웃 -->
+            <LinearLayout
+                android:id="@+id/resultContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!-- 결과값들이 여기에 동적으로 추가됨 -->
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/searchBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:text="승차 정류장을 입력해주세요"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.619"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

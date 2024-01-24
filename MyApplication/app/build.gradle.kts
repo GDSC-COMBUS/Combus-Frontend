@@ -46,15 +46,25 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.11.0") //메테리얼
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0") //build.gradle(Module: app) 파일에 Retrofit2 의존성을 추가(로그인 구현을 위해)
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0") //build.gradle(Module: app) 파일에 Retrofit2 의존성을 추가(로그인 구현을 위해)
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0") //레트로핏
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0") //gson 컨버터
+    implementation ("com.squareup.okhttp3:okhttp:4.8.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.8.0")
 
     implementation ("com.google.android.gms:play-services-maps:17.0.1") //구글 지도
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2") //Retrofit의 Call 객체를 사용할 때, 비동기 호출을 위해 await() 함수를 사용하려면 코루틴에 대한 의존성을 추가해야 합니다. await() 함수는 kotlinx.coroutines 패키지에 정의되어 있습니다.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2") //await() 함수를 사용하려면 Kotlin 코루틴과 관련된 라이브러리 추가
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+
+    // Google Map
+    implementation ("com.google.android.gms:play-services-location:17.0.0")
+
+    // implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-tasks:1.5.2") // 수정된 부분: kotlinx-coroutines-tasks는 사용되지 않아 주석 처리
 }
