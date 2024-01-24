@@ -21,11 +21,10 @@ class MainActivity : AppCompatActivity() {
 
             loginManager.loginUser(membershipNumber, object : LoginCallback {
                 override fun onLoginSuccess() {
-                    val status:String =
                     // 로그인이 성공한 경우에만 예약 내역 조회 시작
-                    if ( == "1234") {
+                    if ( membershipNumber == "1234") {
                         // 화면 전환 로직 추가
-                        val intent = Intent(this@MainActivity, Reserved::class.java)
+                        val intent = Intent(this@MainActivity, NoReservation::class.java)
                         startActivity(intent)
                     } else {
                         // 로그인 실패 시 토스트 메시지 띄우기
