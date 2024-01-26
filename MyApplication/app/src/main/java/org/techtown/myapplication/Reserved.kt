@@ -34,6 +34,9 @@ class Reserved : AppCompatActivity() {
 
         // "승차 완료" 버튼 클릭 시
         binding.buttonStatus.setOnClickListener {
+            //val clickedBackground = resources.getDrawable(R.drawable.clicked_button_background, null)
+            //새로운 배경 지정
+            //binding.buttonStatus.background = clickedBackground
             updateStatusOnServer(reservationData?.id, "승차 완료") { response ->
                 handleApiResponse(response)
             }
@@ -41,6 +44,9 @@ class Reserved : AppCompatActivity() {
 
         // "하차 완료" 버튼 클릭 시
         binding.buttonStatus2.setOnClickListener {
+            //val clickedBackground = resources.getDrawable(R.drawable.clicked_button_background, null)
+            //새로운 배경 지정
+            //binding.buttonStatus.background = clickedBackground
             updateStatusOnServer(reservationData?.id, "하차 완료") { response ->
                 handleApiResponse(response)
             }
