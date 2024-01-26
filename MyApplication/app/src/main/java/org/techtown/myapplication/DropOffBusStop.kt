@@ -1,4 +1,5 @@
 package org.techtown.myapplication
+
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -30,6 +31,8 @@ import org.techtown.myapplication.databinding.ActivityDropOffBusStopBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.app.AlertDialog
+import android.content.DialogInterface
 
 class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
@@ -71,9 +74,12 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
         for (i in 0 until resultContainer.childCount) {
             val cardView = resultContainer.getChildAt(i) as? CardView
             cardView?.setOnClickListener {
+                //선택한 하차 정류소에 대한 정보를 저장
                 val position = resultContainer.indexOfChild(cardView)
                 selectedDropOffBusStop = busStops?.get(position)
+
                 navigateToReservedPage()
+                //예약 페이지로 이동+서버에 예약 정보를 전송+확인창 띄우기
             }
         }
     }
@@ -132,21 +138,36 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun navigateToReservedPage() {
-        // 서버로 예약 정보 전송하기
-        // 예약 정보 생성
-        val reservation = ReservationComplete(
-            boardingStop = "승차 정류소 고유 번호",  // TODO: 실제 데이터로 대체
-            dropStop = selectedDropOffBusStop?.arsId ?: "",  // 수정된 부분
-            vehId = "버스 ID",  // TODO: 실제 데이터로 대체
-            busRouteNm = "버스 노선 번호"  // TODO: 실제 데이터로 대체
-        )
+        //확인창 띄우기
+        val builder = AlertDialog.Builder(this)
 
-        // 서버에 예약 정보 전송
-        sendReservationToServer(reservation)
+        builder.setTitle("예약 확인창")
+            .setMessage("정말로 예약하시겠습니까?")
+            .setPositiveButton("네") { dialog, which ->
+                // 처리할 작업을 여기에 추가하세요.
+                // 예를 들어, 어떤 동작을 수행하거나 다른 함수를 호출할 수 있습니다.
+                // 예: performAction()
+                // 서버로 예약 정보 전송하기
+                // 예약 정보 생성
+                val reservation = ReservationComplete(
+                    boardingStop = "승차 정류소 고유 번호",  // TODO: 실제 데이터로 대체
+                    dropStop = selectedDropOffBusStop?.arsId ?: "",  // 수정된 부분
+                    vehId = "버스 ID",  // TODO: 실제 데이터로 대체
+                    busRouteNm = "버스 노선 번호"  // TODO: 실제 데이터로 대체
+                )
 
-        val intent = Intent(this, Reserved::class.java)
-        intent.putExtra("dropOffBusStop", selectedDropOffBusStop)
-        startActivity(intent)
+                // 서버에 예약 정보 전송
+                sendReservationToServer(reservation)
+
+                //예약 페이지(Reserved 액티비티)로 이동
+                val intent = Intent(this, Reserved::class.java)
+                intent.putExtra("dropOffBusStop", selectedDropOffBusStop)
+                startActivity(intent)
+            }
+            .setNegativeButton("아니요") { dialog, which ->
+                // 취소 또는 다른 작업을 수행할 수 있습니다.
+            }
+            .show()
     }
 
     private fun requestLocationPermission() {
