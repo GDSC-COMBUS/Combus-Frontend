@@ -33,6 +33,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.location.Location
 
 class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
@@ -46,8 +47,12 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
         val binding = ActivityDropOffBusStopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 위치 권한이 허용되었는지 확인
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             initializeMap()
+
+            // 사용자의 현재 위치를 가져와 하차 정류소 목록을 업데이트
+            fetchAndDisplayDropOffBusStops()
         } else {
             requestLocationPermission()
         }
@@ -80,6 +85,50 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
                 navigateToReservedPage()
                 //예약 페이지로 이동+서버에 예약 정보를 전송+확인창 띄우기
+            }
+        }
+    }
+
+    private fun fetchAndDisplayDropOffBusStops() {
+        // 위치 권한이 허용된 경우에만 현재 위치 정보를 가져옴
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
+            location?.let {
+                val locationRequest = LocationRequest(it.longitude, it.latitude)
+                val busStopService = ApiManager_DropOffBusStop.create()
+
+                busStopService.getDropOffBusStops(locationRequest)
+                    .enqueue(object : Callback<List<DropOffStop>> {
+                        override fun onResponse(
+                            call: Call<List<DropOffStop>>,
+                            response: Response<List<DropOffStop>>
+                        ) {
+                            if (response.isSuccessful) {
+                                busStops = response.body()
+
+                                // 구글 지도에 버스 정류장 마커 표시
+                                for (busStop in busStops.orEmpty()) {
+                                    val busStopLatLng = LatLng(busStop.latitude, busStop.longitude)
+                                    googleMap.addMarker(
+                                        MarkerOptions().position(busStopLatLng).title(busStop.name)
+                                    )
+                                }
+
+                                // 초기에 가져온 목록을 UI에 표시
+                                updateUIWithSearchResults(busStops)
+                            } else {
+                                // API 호출은 성공했지만 서버에서 오류 응답을 받은 경우
+                                // response.code(), response.message() 등을 활용하여 처리
+                            }
+                        }
+
+                        override fun onFailure(call: Call<List<DropOffStop>>, t: Throwable) {
+                            // API 호출에 실패한 경우
+                            // 에러 메시지를 출력하거나 다른 예외 처리 작업을 수행
+                        }
+                    })
             }
         }
     }
@@ -200,6 +249,20 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
     private fun initializeMap() {
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mapView = findViewById(R.id.mapView)
+            mapView.onCreate(null)
+            mapView.getMapAsync(this)
+            // 사용자의 현재 위치를 가져와 하차 정류소 목록을 업데이트
+            fetchAndDisplayDropOffBusStops()
+        } else {
+            requestLocationPermission()
+        }
+    }
+
+
+    /*
+    private fun initializeMap() {
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             val locationRequest = LocationRequest(126.9723, 37.5562)
             val busStopService = ApiManager_DropOffBusStop.create()
 
@@ -238,7 +301,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
         } else {
             requestLocationPermission()
         }
-    }
+    }*/
 
     override fun onMapReady(gMap: GoogleMap) {
         googleMap = gMap
@@ -283,32 +346,47 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun searchBusStops(query: String) {
-        val locationRequest = LocationRequest(126.9723, 37.5562)
-        val busStopService = ApiManager_DropOffBusStop.create()
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        var location: Location? = null
 
-        busStopService.getDropOffBusStops() // 수정된 부분
-            .enqueue(object : Callback<List<DropOffStop>> {
-                override fun onResponse(
-                    call: Call<List<DropOffStop>>,
-                    response: Response<List<DropOffStop>>
-                ) {
-                    if (response.isSuccessful) {
-                        val busStops = response.body()
-                        val filteredBusStops = busStops?.filter { it.name.contains(query, ignoreCase = true) }
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            // 위치 정보를 사용하는 코드...
+        } else {
+            // 위치 권한이 없는 경우 처리
+            // 사용자에게 권한을 요청하거나 다른 처리를 수행
+            requestLocationPermission()
+        }
 
-                        updateUIWithSearchResults(filteredBusStops)
-                    } else {
-                        // API 호출은 성공했지만 서버에서 오류 응답을 받은 경우
-                        // response.code(), response.message() 등을 활용하여 처리
+        location?.let {
+            val locationRequest = LocationRequest(it.longitude, it.latitude)
+            val busStopService = ApiManager_DropOffBusStop.create()
+
+            busStopService.getDropOffBusStops(locationRequest)
+                .enqueue(object : Callback<List<DropOffStop>> {
+                    override fun onResponse(
+                        call: Call<List<DropOffStop>>,
+                        response: Response<List<DropOffStop>>
+                    ) {
+                        if (response.isSuccessful) {
+                            val busStops = response.body()
+                            val filteredBusStops = busStops?.filter { it.name.contains(query, ignoreCase = true) }
+
+                            updateUIWithSearchResults(filteredBusStops)
+                        } else {
+                            // API 호출은 성공했지만 서버에서 오류 응답을 받은 경우
+                            // response.code(), response.message() 등을 활용하여 처리
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<List<DropOffStop>>, t: Throwable) {
-                    // API 호출에 실패한 경우
-                    // 에러 메시지를 출력하거나 다른 예외 처리 작업을 수행
-                }
-            })
+                    override fun onFailure(call: Call<List<DropOffStop>>, t: Throwable) {
+                        // API 호출에 실패한 경우
+                        // 에러 메시지를 출력하거나 다른 예외 처리 작업을 수행
+                    }
+                })
+        }
     }
+
 
     private fun updateUIWithSearchResults(busStops: List<DropOffStop>?) {
         val resultContainer = findViewById<LinearLayout>(R.id.resultContainer)

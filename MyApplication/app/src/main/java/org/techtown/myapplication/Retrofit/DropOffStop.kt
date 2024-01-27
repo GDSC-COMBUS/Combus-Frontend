@@ -58,7 +58,7 @@ data class DropOffStop(
 interface DropOffStopService {
     @Headers("Content-Type: application/json")
     @GET("/reservation/endst")
-    fun getDropOffBusStops(): Call<List<DropOffStop>>
+    fun getDropOffBusStops(@Body locationRequest: LocationRequest): Call<List<DropOffStop>>
 }
 
 object ApiManager_DropOffBusStop {
@@ -107,6 +107,3 @@ data class ApiResponse(
     @SerializedName("status") val status: String,
     @SerializedName("detail") val detail: String
 )
-
-
-
