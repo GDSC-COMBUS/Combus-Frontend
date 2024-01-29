@@ -11,7 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
-data class BusStop(
+data class BoardingStop(
     @SerializedName("arsId") val arsId: String,
     @SerializedName("name") val name: String,
     @SerializedName("gpsX") val longitude: Double,
@@ -36,21 +36,21 @@ data class BusStop(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<BusStop> {
-        override fun createFromParcel(parcel: Parcel): BusStop {
-            return BusStop(parcel)
+    companion object CREATOR : Parcelable.Creator<BoardingStop> {
+        override fun createFromParcel(parcel: Parcel): BoardingStop {
+            return BoardingStop(parcel)
         }
 
-        override fun newArray(size: Int): Array<BusStop?> {
+        override fun newArray(size: Int): Array<BoardingStop?> {
             return arrayOfNulls(size)
         }
     }
 }
 
-interface BusStopService {
+interface BoardingStopService {
     @Headers("Content-Type: application/json")
     @POST("/reservation/startst")
-    fun getNearbyBusStops(@Body locationRequest: LocationRequest): Call<List<BusStop>>
+    fun getNearbyBusStops(@Body locationRequest: LocationRequest): Call<List<BoardingStop>>
 }
 
 data class LocationRequest(
@@ -61,12 +61,12 @@ data class LocationRequest(
 object ApiManager_BoardingBusStop {
     private const val BASE_URL = "https://your-api-base-url.com/"
 
-    fun create(): BusStopService {
+    fun create(): BoardingStopService {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        return retrofit.create(BusStopService::class.java)
+        return retrofit.create(BoardingStopService::class.java)
     }
 }

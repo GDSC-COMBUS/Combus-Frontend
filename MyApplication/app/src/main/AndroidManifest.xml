@@ -25,7 +25,7 @@
             android:name=".NoReservation"
             android:exported="false" />
         <activity
-            android:name=".GetOffBusStop"
+            android:name=".DropOffBusStop"
             android:exported="false" />
         <activity
             android:name=".BusSelection"
