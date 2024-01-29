@@ -3,6 +3,7 @@ package org.techtown.myapplication
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import org.techtown.myapplication.Retrofit.ApiManager_homeReservation
 import org.techtown.myapplication.Retrofit.HomeReservationResponse
@@ -34,23 +35,38 @@ class Reserved : AppCompatActivity() {
 
         // "승차 완료" 버튼 클릭 시
         binding.buttonStatus.setOnClickListener {
-            //val clickedBackground = resources.getDrawable(R.drawable.clicked_button_background, null)
-            //새로운 배경 지정
-            //binding.buttonStatus.background = clickedBackground
-            updateStatusOnServer(reservationData?.id, "승차 완료") { response ->
-                handleApiResponse(response)
+            showConfirmationDialog("승차 완료하셨습니까?") {
+                // 사용자가 확인을 누른 경우에만 아래 코드 실행
+                binding.buttonStatus.setTextColor(resources.getColor(R.color.clickedTextColor))
+                updateStatusOnServer(reservationData?.id, "승차 완료") { response ->
+                    handleApiResponse(response)
+                }
+                binding.buttonStatus.isEnabled = false
             }
         }
 
         // "하차 완료" 버튼 클릭 시
         binding.buttonStatus2.setOnClickListener {
-            //val clickedBackground = resources.getDrawable(R.drawable.clicked_button_background, null)
-            //새로운 배경 지정
-            //binding.buttonStatus.background = clickedBackground
-            updateStatusOnServer(reservationData?.id, "하차 완료") { response ->
-                handleApiResponse(response)
+            showConfirmationDialog("하차 완료하셨습니까?") {
+                // 사용자가 확인을 누른 경우에만 아래 코드 실행
+                binding.buttonStatus.setTextColor(resources.getColor(R.color.clickedTextColor))
+                updateStatusOnServer(reservationData?.id, "하차 완료") { response ->
+                    handleApiResponse(response)
+                }
+                binding.buttonStatus.isEnabled = false
             }
         }
+    }
+
+    // 확인 대화 상자를 표시하는 함수
+    private fun showConfirmationDialog(message: String, onConfirmed: () -> Unit) {
+        AlertDialog.Builder(this)
+            .setMessage(message)
+            .setPositiveButton("예") { _, _ ->
+                onConfirmed.invoke()
+            }
+            .setNegativeButton("아니요", null)
+            .show()
     }
 
     // 서버에 상태 업데이트 요청을 보내는 함수
