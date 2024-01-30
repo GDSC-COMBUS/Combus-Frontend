@@ -66,5 +66,4 @@ dependencies {
     // Google Map
     implementation ("com.google.android.gms:play-services-location:17.0.0")
 
-    // implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-tasks:1.5.2") // 수정된 부분: kotlinx-coroutines-tasks는 사용되지 않아 주석 처리
 }
