@@ -3,11 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.techtown.myapplication">
 
+    <!--인터넷 권한-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!--오디오 사용 권한-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!--음성인식 STT 기능 구현-->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
 
     <application
         android:usesCleartextTraffic="true"
@@ -25,7 +36,7 @@
             android:name=".NoReservation"
             android:exported="false" />
         <activity
-            android:name=".GetOffBusStop"
+            android:name=".DropOffBusStop"
             android:exported="false" />
         <activity
             android:name=".BusSelection"
