@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:backgroundTint="#3F51B5">
 
 
     <Button
         android:id="@+id/button_camera"
         android:layout_width="140dp"
         android:layout_height="74dp"
-        android:layout_marginTop="496dp"
+        android:layout_marginTop="524dp"
         android:background="@drawable/radius"
         android:backgroundTint="#6E99F6"
         android:backgroundTintMode="src_over"
@@ -18,23 +19,7 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.177"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button_camera2"
-        android:layout_width="140dp"
-        android:layout_height="74dp"
-        android:layout_marginTop="496dp"
-        android:background="@drawable/radius"
-        android:backgroundTint="#6E99F6"
-        android:backgroundTintMode="src_over"
-        android:text="예약 기록"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.819"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -214,6 +199,37 @@
             android:text="승차 여부"
             android:textColor="#000000"
             android:textSize="24sp" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button_status"
+        android:layout_width="112dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="472dp"
+        android:layout_weight="0"
+        android:background="@drawable/button_status_background"
+        android:text="승차 완료"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_status2"
+        android:layout_width="112dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="472dp"
+        android:layout_marginEnd="64dp"
+        android:layout_weight="0"
+        android:background="@drawable/button_status_background"
+        android:text="하차 완료"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

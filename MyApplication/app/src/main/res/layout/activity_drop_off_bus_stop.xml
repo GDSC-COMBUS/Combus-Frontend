@@ -60,17 +60,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/searchBox_drop_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="하차 정류장을 입력해주세요"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:id="@+id/dropOffStopList"
         android:layout_width="331dp"
-        android:layout_height="346dp"
+        android:layout_height="200dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.857">
+        app:layout_constraintVertical_bias="0.65">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -88,15 +100,51 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/searchBox_boarding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
-        android:text="승차 정류장을 입력해주세요"
-        android:textSize="18sp"
+        android:id="@+id/textView3"
+        android:layout_width="375dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="572dp"
+        android:background="@drawable/radius"
+        android:text="  버스 번호"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.619"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="377dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="632dp"
+        android:background="@drawable/radius"
+        android:text="  탑승 정류장"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/selectedBusNum"
+        android:layout_width="206dp"
+        android:layout_height="39dp"
+        android:text="105번"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.775"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="572dp" />
+
+    <TextView
+        android:id="@+id/selectedBoardingStop"
+        android:layout_width="206dp"
+        android:layout_height="78dp"
+        android:text="성신여대 입구역"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.775"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="632dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
