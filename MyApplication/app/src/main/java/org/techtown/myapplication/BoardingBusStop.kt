@@ -328,7 +328,9 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
     // 클릭한 정류장의 정보를 다른 액티비티로 전달하면서 액티비티 전환
     private fun navigateToDetailsActivity(busStop: BoardingStop) {
         val intent = Intent(this, BusSelection::class.java)
-        intent.putExtra("busStop", busStop)
+        intent.putExtra("busStop_name", busStop.name)
+        intent.putExtra("gpsX",busStop.longitude)
+        intent.putExtra("gpsY",busStop.latitude)
         startActivity(intent)
     }
 }
