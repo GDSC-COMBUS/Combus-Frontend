@@ -29,10 +29,6 @@ class RetrofitClient {
         @SerializedName("loginId")
         val loginIn:String
     )
-    data class requesthome(
-        @SerializedName("driverId")
-        val driverId:Long
-    )
     data class responsehome(
         @SerializedName("timestamp")
         val timestamp:String,
@@ -85,4 +81,39 @@ class RetrofitClient {
         @SerializedName("wheelchair")
         val wheelchair:Boolean
     )
+    data class responsebusstopDetail(
+        @SerializedName("timestamp")
+        val timestamp:String,
+        @SerializedName("code")
+        val code:String,
+        @SerializedName("status")
+        val status:String,
+        @SerializedName("detail")
+        val detail:String,
+        @SerializedName("data")
+        val data:busstopDetaildata
+    )
+    data class busstopDetaildata(
+        @SerializedName("boardingInfo")
+        val boardingInfo:detailInfolist,
+        @SerializedName("boardingBlindCnt")
+        val boardingBlindCnt:Int,
+        @SerializedName("boardingWheelchairCnt")
+        val boardingWheelchairCnt:Int,
+        @SerializedName("dropInfo")
+        val dropInfo:detailInfolist,
+        @SerializedName("dropBlindCnt")
+        val dropBlindCnt:Int,
+        @SerializedName("dropWheelchairCnt")
+        val dropWheelchairCnt:Int
+    )
+    data class detailInfolist(
+        @SerializedName("type")
+        val type:String,
+        @SerializedName("boardingStop")
+        val boardingStop:String,
+        @SerializedName("dropStop")
+        val dropStop:String
+    )
+
 }

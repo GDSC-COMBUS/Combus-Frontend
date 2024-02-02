@@ -1,8 +1,8 @@
 package com.example.combus_driverapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.combus_driverapp.connection.RetrofitClient
 import com.example.combus_driverapp.databinding.ActivityDriverHomeBinding
@@ -19,12 +19,7 @@ class Driver_Home : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val extras = intent.extras
-        val driverId = extras!!["driverId"]
-
         fetchFromServer()
-
-        initializeViews()
 
     }
     private fun fetchFromServer() {
@@ -50,6 +45,14 @@ class Driver_Home : AppCompatActivity() {
                                 binding.txtBusnum.text = responseData.data.busRouteName
                                 binding.txtBusBookNum.text = "예약 ${responseData.data.totalReserved}"
                                 binding.txtBusOutNum.text = "하차 ${responseData.data.totalDrop}"
+
+                                val recyclemanager = LinearLayoutManager(this@Driver_Home)
+                                binding.bussropRecycle.layoutManager = recyclemanager
+                                val centerOfScreen: Int = binding.bussropRecycle.height / 2
+                                recyclemanager.scrollToPositionWithOffset(
+                                    responseData.data.busPos.stSeq,
+                                    centerOfScreen
+                                )
                             }
                         } else {
                             // 서버로부터 응답을 받지 못했을 때 처리
@@ -71,7 +74,5 @@ class Driver_Home : AppCompatActivity() {
         // 액티비티가 종료될 때 핸들러 작업을 제거하여 메모리 누수를 방지합니다.
         handler.removeCallbacksAndMessages(null)
     }
-    private fun initializeViews(){
-        binding.bussropRecycle.layoutManager = LinearLayoutManager(this)
-    }
+
 }

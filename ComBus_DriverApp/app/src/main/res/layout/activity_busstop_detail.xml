@@ -59,16 +59,6 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/txt_busstop_next"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/aldrich"
-                    android:gravity="center"
-                    android:text="성신여대평생교육원 방면"
-                    android:textColor="@color/busspot_num_gray"
-                    android:textSize="15sp" />
-
-                <TextView
                     android:id="@+id/txt_busstop_book_num"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

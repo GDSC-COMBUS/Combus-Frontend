@@ -14,10 +14,7 @@
         <activity
             android:name=".busstop_detail"
             android:exported="false" />
-        <activity
-            android:name=".seat_listpage"
-            android:exported="false" />
-        <activity
+                <activity
             android:name=".Driver_Home"
             android:exported="false" />
         <activity

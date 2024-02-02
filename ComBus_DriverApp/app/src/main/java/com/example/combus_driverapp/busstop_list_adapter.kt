@@ -46,6 +46,8 @@ class busstop_list_adapter(private val busstoplist: List<RetrofitClient.homebusS
                         val intent = Intent(context,busstop_detail::class.java)
                         intent.putExtra("busstop_name",busstop.name)
                         intent.putExtra("busstop_num",busstop.arsId)
+                        intent.putExtra("boarding_num",busstop.reserved_cnt)
+                        intent.putExtra("drop_num",busstop.drop_cnt)
                         intent.run { context.startActivity(this) }
                     }
                 }
