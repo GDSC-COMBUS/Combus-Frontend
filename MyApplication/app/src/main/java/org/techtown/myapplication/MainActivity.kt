@@ -33,31 +33,44 @@ class MainActivity : AppCompatActivity() {
 
     // 음성인식 기능
     private lateinit var speechRecognizer: SpeechRecognizer
+    private val RECORD_AUDIO_PERMISSION_CODE = 1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 음성인식 기능 구현 시작
+
+        // 권한 설정
+        requestPermission()
+
+        // <말하기> 버튼 눌러서 음성인식 시작
+        binding.speakButton.setOnClickListener {
+            // 기존의 SpeechRecognizer가 존재하는지 확인하고 중지 및 해제
+            if (::speechRecognizer.isInitialized) {
+                speechRecognizer.stopListening()
+                speechRecognizer.cancel()
+            }
+
+            // SpeechRecognizer 다시 생성 및 시작
+            initializeSpeechRecognizer()
+            speechRecognizer.startListening(intent)
+        }
+
         binding.startButton.setOnClickListener {
             val intent = Intent(this@MainActivity, Reserved::class.java)
             startActivity(intent)
 
-//            val intent = Intent(this@MainActivity, NoReservation::class.java)
-//            startActivity(intent)
-
-            // 사용 예시
             val userService = ApiManager_login.create().loginUser(LoginRequest("1234"))
             val response = userService.execute()
 
             if (response.isSuccessful) {
                 val loginResponse = response.body()
                 if (loginResponse?.status == "OK") {
-                    // 성공적으로 로그인한 경우
                     val userData = loginResponse.data
-                    // userData.id, userData.name, userData.loginId 등으로 사용자 정보에 접근할 수 있습니다.
 
-                    // API 호출 예시
                     val homeReservationService = ApiManager_homeReservation.create().getHomeReservation()
                     val call = homeReservationService.enqueue(object :
                         Callback<HomeReservationResponse> {
@@ -68,50 +81,36 @@ class MainActivity : AppCompatActivity() {
                             if (response.isSuccessful) {
                                 val homeReservationResponse = response.body()
                                 if (homeReservationResponse?.status == "OK") {
-                                    // 홈 예약 내역이 존재하는 경우
                                     val reservationData = homeReservationResponse.data
-                                    // reservationData.id, reservationData.boardingStop 등으로 예약 정보에 접근할 수 있습니다.
                                     Log.d("MainActivity", "Reservation exists: ${reservationData?.boardingStop}")
-                                    // 다른 화면으로 전환
-                                    // Intent를 통해 예약 정보를 ReservedActivity로 전달
                                     val intent = Intent(this@MainActivity, Reserved::class.java)
-                                    intent.putExtra("reservationData", reservationData) // 다른 화면으로 데이터 전달 예시
+                                    intent.putExtra("reservationData", reservationData)
                                     startActivity(intent)
-                                    finish() // 현재 화면 종료
-
+                                    finish()
                                 } else {
-                                    // 홈 예약 내역이 존재하지 않는 경우
                                     Log.d("MainActivity", "No reservation exists")
-                                    // 다른 화면으로 전환
                                     val intent = Intent(this@MainActivity, NoReservation::class.java)
-                                    //intent.putExtra("userId", userData.id) // 다른 화면으로 데이터 전달 예시
                                     startActivity(intent)
-                                    finish() // 현재 화면 종료
+                                    finish()
                                 }
                             } else {
-                                // 네트워크 오류 또는 서버 응답 오류
                                 Log.d("MainActivity", "Network error or server response error: ${response.code()}")
                             }
                         }
 
                         override fun onFailure(call: Call<HomeReservationResponse>, t: Throwable) {
-                            // 통신 실패 시
                             Log.d("MainActivity", "Call failed: ${t.message}")
                         }
                     })
 
-                    // 다른 화면으로 전환
                     val intent = Intent(this@MainActivity, Reserved::class.java)
-                    //intent.putExtra("userId", userData.id) // 다른 화면으로 데이터 전달 예시
                     startActivity(intent)
-                    finish() // 현재 화면 종료
+                    finish()
                 } else {
-                    // 로그인 실패한 경우
                     val detail = loginResponse?.detail ?: "Unknown error"
                     println("Login failed: $detail")
                 }
             } else {
-                // 네트워크 오류 또는 서버 응답 오류
                 println("Network error or server response error: ${response.code()}")
             }
         }
@@ -134,63 +133,134 @@ class MainActivity : AppCompatActivity() {
             speechRecognizer.startListening(intent)                         // 듣기 시작
         }
     }
-
-    // 권한 설정 메소드(음성 인식 기능)
     private fun requestPermission() {
-        // 버전 체크, 권한 허용했는지 체크
         if (Build.VERSION.SDK_INT >= 23 &&
-            ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(this@MainActivity,
-                arrayOf(Manifest.permission.RECORD_AUDIO), 0)
+            ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                RECORD_AUDIO_PERMISSION_CODE
+            )
+        } else {
+            // 이미 권한이 허용된 경우 또는 권한을 허용한 경우 처리
+            // 여기에 추가적인 로직을 넣을 수 있습니다.
+            initializeSpeechRecognizer()
         }
     }
 
-    // 리스너 설정(음성 인식 기능)
-    private val recognitionListener: RecognitionListener = object : RecognitionListener {
-        // 말하기 시작할 준비가되면 호출
-        override fun onReadyForSpeech(params: Bundle) {
-            Toast.makeText(applicationContext, "음성인식 시작", Toast.LENGTH_SHORT).show()
-            binding.tvState.text = "이제 말씀하세요!"
-        }
-        // 말하기 시작했을 때 호출
-        override fun onBeginningOfSpeech() {
-            binding.tvState.text = "잘 듣고 있어요."
-        }
-        // 입력받는 소리의 크기를 알려줌
-        override fun onRmsChanged(rmsdB: Float) {}
-        // 말을 시작하고 인식이 된 단어를 buffer에 담음
-        override fun onBufferReceived(buffer: ByteArray) {}
-        // 말하기를 중지하면 호출
-        override fun onEndOfSpeech() {
-            binding.tvState.text = "끝!"
-        }
-        // 오류 발생했을 때 호출
-        override fun onError(error: Int) {
-            val message = when (error) {
-                SpeechRecognizer.ERROR_AUDIO -> "오디오 에러"
-                SpeechRecognizer.ERROR_CLIENT -> "클라이언트 에러"
-                SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "퍼미션 없음"
-                SpeechRecognizer.ERROR_NETWORK -> "네트워크 에러"
-                SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "네트웍 타임아웃"
-                SpeechRecognizer.ERROR_NO_MATCH -> "찾을 수 없음"
-                SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "RECOGNIZER 가 바쁨"
-                SpeechRecognizer.ERROR_SERVER -> "서버가 이상함"
-                SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "말하는 시간초과"
-                else -> "알 수 없는 오류임"
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            RECORD_AUDIO_PERMISSION_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // 사용자가 권한을 허용한 경우 처리
+                    // 여기에 추가적인 로직을 넣을 수 있습니다.
+                    initializeSpeechRecognizer()
+                } else {
+                    // 사용자가 권한을 거부한 경우 메시지 표시 또는 다른 처리
+                    Toast.makeText(
+                        applicationContext,
+                        "음성인식 권한이 필요합니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-            binding.tvState.text = "에러 발생: $message"
+            // 다른 권한에 대한 처리 추가 가능
         }
-        // 인식 결과가 준비되면 호출
-        override fun onResults(results: Bundle) {
-            // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줌
-            val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-            for (i in matches!!.indices) binding.textView7.text = matches[i]
+    }
+
+
+    private val recognitionListener: RecognitionListener by lazy {
+        object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle) {
+                Toast.makeText(applicationContext, "음성인식 시작", Toast.LENGTH_SHORT).show()
+                binding.tvState.text = "이제 말씀하세요!"
+            }
+
+            override fun onBeginningOfSpeech() {
+                binding.tvState.text = "잘 듣고 있어요."
+            }
+
+            override fun onRmsChanged(rmsdB: Float) {}
+
+            override fun onBufferReceived(buffer: ByteArray) {}
+
+            override fun onEndOfSpeech() {
+                binding.tvState.text = "끝!"
+            }
+
+            override fun onError(error: Int) {
+                val message = when (error) {
+                    SpeechRecognizer.ERROR_AUDIO -> "오디오 에러"
+                    SpeechRecognizer.ERROR_CLIENT -> "클라이언트 에러"
+                    SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
+                        runOnUiThread {
+                            Toast.makeText(applicationContext, "음성인식 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        "퍼미션 없음"
+                    }
+                    SpeechRecognizer.ERROR_NETWORK -> "네트워크 에러"
+                    SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "네트웍 타임아웃"
+                    SpeechRecognizer.ERROR_NO_MATCH -> "찾을 수 없음"
+                    SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> {
+                        runOnUiThread {
+                            Toast.makeText(applicationContext, "Recognition service busy. Retrying...", Toast.LENGTH_SHORT).show()
+                            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this@MainActivity)
+                            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this@MainActivity)
+                            speechRecognizer.setRecognitionListener(recognitionListener)
+                            speechRecognizer.startListening(intent)
+                        }
+                        "RECOGNIZER 가 바쁨"
+                    }
+                    SpeechRecognizer.ERROR_SERVER -> "서버가 이상함"
+                    SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "말하는 시간초과"
+                    else -> "알 수 없는 오류임"
+                }
+                binding.tvState.text = "에러 발생: $message"
+            }
+
+            override fun onResults(results: Bundle) {
+                val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                val resultText = matches?.joinToString("\n")
+
+                runOnUiThread {
+                    binding.textView7.text = resultText
+                    Log.d("MainActivity", "Recognition result: $resultText")
+                }
+            }
+
+            override fun onPartialResults(partialResults: Bundle) {}
+
+            override fun onEvent(eventType: Int, params: Bundle) {}
         }
-        // 부분 인식 결과를 사용할 수 있을 때 호출
-        override fun onPartialResults(partialResults: Bundle) {}
-        // 향후 이벤트를 추가하기 위해 예약
-        override fun onEvent(eventType: Int, params: Bundle) {}
+    }
+
+    private fun initializeSpeechRecognizer() {
+        // RecognizerIntent 생성
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)    // 여분의 키
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")               // 언어 설정
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+
+        // SpeechRecognizer 초기화 및 시작
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this@MainActivity)
+        speechRecognizer.setRecognitionListener(recognitionListener)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::speechRecognizer.isInitialized) {
+            speechRecognizer.stopListening()
+            speechRecognizer.cancel()
+        }
     }
 }

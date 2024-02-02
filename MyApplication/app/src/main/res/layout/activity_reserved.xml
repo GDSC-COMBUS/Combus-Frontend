@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:backgroundTint="#3F51B5">
 
 
     <Button
         android:id="@+id/button_camera"
         android:layout_width="140dp"
         android:layout_height="74dp"
-        android:layout_marginTop="496dp"
+        android:layout_marginTop="524dp"
         android:background="@drawable/radius"
         android:backgroundTint="#6E99F6"
         android:backgroundTintMode="src_over"
@@ -18,23 +19,7 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.177"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button_camera2"
-        android:layout_width="140dp"
-        android:layout_height="74dp"
-        android:layout_marginTop="496dp"
-        android:background="@drawable/radius"
-        android:backgroundTint="#6E99F6"
-        android:backgroundTintMode="src_over"
-        android:text="예약 기록"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.819"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,7 +50,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="128dp"
         android:background="@drawable/radius"
         android:gravity="center"
@@ -79,8 +64,9 @@
             android:id="@+id/date"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="  일시"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/createdAt"
@@ -89,14 +75,14 @@
             android:layout_weight="1"
             android:text="일시"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center"
@@ -109,8 +95,9 @@
             android:id="@+id/textView12"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="  탑승 정류장"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/boardingStop"
@@ -119,14 +106,14 @@
             android:layout_weight="1"
             android:text="탑승 정류장"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center_vertical"
@@ -139,9 +126,10 @@
             android:id="@+id/textView15"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0"
             android:text="  버스 번호"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/busId"
@@ -151,13 +139,13 @@
             android:gravity="center"
             android:text="버스 번호"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center_vertical"
@@ -170,9 +158,10 @@
             android:id="@+id/textView16"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0"
             android:text="  하차 정류장"
-            android:textSize="24sp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -183,13 +172,13 @@
             android:layout_weight="0"
             android:text="하차 정류장"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout5"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center_vertical"
@@ -202,9 +191,10 @@
             android:id="@+id/textView8"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0"
             android:text="  승차 여부"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/status"
@@ -213,7 +203,38 @@
             android:layout_weight="0"
             android:text="승차 여부"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button_status"
+        android:layout_width="112dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="472dp"
+        android:layout_weight="0"
+        android:background="@drawable/button_status_background"
+        android:text="승차 완료"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_status2"
+        android:layout_width="112dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="472dp"
+        android:layout_marginEnd="64dp"
+        android:layout_weight="0"
+        android:background="@drawable/button_status_background"
+        android:text="하차 완료"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
