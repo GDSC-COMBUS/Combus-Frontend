@@ -50,7 +50,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="128dp"
         android:background="@drawable/radius"
         android:gravity="center"
@@ -64,8 +64,9 @@
             android:id="@+id/date"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="  일시"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/createdAt"
@@ -74,14 +75,14 @@
             android:layout_weight="1"
             android:text="일시"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center"
@@ -94,8 +95,9 @@
             android:id="@+id/textView12"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="  탑승 정류장"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/boardingStop"
@@ -104,14 +106,14 @@
             android:layout_weight="1"
             android:text="탑승 정류장"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center_vertical"
@@ -124,9 +126,10 @@
             android:id="@+id/textView15"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0"
             android:text="  버스 번호"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/busId"
@@ -136,13 +139,13 @@
             android:gravity="center"
             android:text="버스 번호"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center_vertical"
@@ -155,9 +158,10 @@
             android:id="@+id/textView16"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0"
             android:text="  하차 정류장"
-            android:textSize="24sp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -168,13 +172,13 @@
             android:layout_weight="0"
             android:text="하차 정류장"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout5"
         android:layout_width="355dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
         android:gravity="center_vertical"
@@ -187,9 +191,10 @@
             android:id="@+id/textView8"
             android:layout_width="144dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0"
             android:text="  승차 여부"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/status"
@@ -198,7 +203,7 @@
             android:layout_weight="0"
             android:text="승차 여부"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 

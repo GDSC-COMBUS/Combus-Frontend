@@ -19,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import org.techtown.myapplication.Retrofit.ApiManager_BoardingBusStop
 import org.techtown.myapplication.Retrofit.BoardingStop
@@ -110,7 +111,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
             mapView.onCreate(null) // savedInstanceState 대신 null을 전달
             mapView.getMapAsync(this)
 
-            // 예약 정보 가져오기 (초기에 100m 이내의 승차 정류장을 가져와 지도에 표시)
+            /* 예약 정보 가져오기 (초기에 100m 이내의 승차 정류장을 가져와 지도에 표시) */
             getNearbyBusStopsForInitial()
 
             // EditText에 대한 이벤트 핸들러 추가
@@ -160,7 +161,18 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
                                 // 구글 지도에 버스 정류장 마커 표시
                                 for (busStop in nearbyBusStops) {
                                     val busStopLatLng = LatLng(busStop.latitude, busStop.longitude)
-                                    googleMap.addMarker(MarkerOptions().position(busStopLatLng).title(busStop.name))
+
+                                    // 마커에 정류장 이름과 고유번호 메모 추가
+                                    val marker = googleMap.addMarker(MarkerOptions().position(busStopLatLng).title(busStop.name))
+                                    if (marker != null) {
+                                        marker.snippet = "ARS 번호: ${busStop.arsId}"
+                                    }
+                                }
+
+                                // 마커 클릭 시 정보창 열기
+                                googleMap.setOnMarkerClickListener { clickedMarker ->
+                                    showInfoWindow(clickedMarker)
+                                    true
                                 }
 
                                 // 초기에 가까운 정류장 리스트를 UI에 표시
@@ -177,6 +189,13 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
                         }
                     })
             }
+        }
+    }
+
+    private fun showInfoWindow(marker: Marker) {
+        val info = marker.snippet
+        info?.let {
+            marker.showInfoWindow()
         }
     }
 
@@ -203,7 +222,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
             // TextView 추가
             val textView = TextView(this)
-            textView.text = busStop.name
+            textView.text = "${busStop.name} (${busStop.arsId})"
             textView.setOnClickListener {
                 // 여기에 해당 승차 정류장을 클릭했을 때의 동작을 추가
                 // 예를 들어, 클릭한 정류장의 위치로 지도를 이동하거나 해당 정류장의 상세 정보를 표시하는 등의 동작을 추가할 수 있음
@@ -212,6 +231,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
             // TextView를 CardView에 추가
             cardView.addView(textView)
+
 
             // CardView를 resultContainer에 추가
             resultContainer.addView(cardView)
@@ -325,6 +345,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
             resultContainer.addView(cardView)
         }
     }
+
     // 클릭한 정류장의 정보를 다른 액티비티로 전달하면서 액티비티 전환
     private fun navigateToDetailsActivity(busStop: BoardingStop) {
         val intent = Intent(this, BusSelection::class.java)

@@ -113,7 +113,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                                     val busStopLatLng = LatLng(busStop.latitude, busStop.longitude)
                                     googleMap.addMarker(
                                         MarkerOptions().position(busStopLatLng).title(busStop.name)
-                                    )
+                                    )?.snippet = "정류장 이름: ${busStop.name}"
                                 }
 
                                 // 초기에 가져온 목록을 UI에 표시
@@ -132,6 +132,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
 
     private fun navigateToDetailsActivity(busStop: DropOffStop) {
         val intent = Intent(this, BusSelection::class.java)
