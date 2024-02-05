@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var speechRecognizer: SpeechRecognizer
     private val RECORD_AUDIO_PERMISSION_CODE = 1
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -113,8 +114,25 @@ class MainActivity : AppCompatActivity() {
                 println("Network error or server response error: ${response.code()}")
             }
         }
-    }
 
+        // 음성인식 기능 구현 시작
+
+        //권한 설정
+        requestPermission()
+
+        // RecognizerIntent 생성
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)    // 여분의 키
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")         // 언어 설정
+
+        // <말하기> 버튼 눌러서 음성인식 시작
+        binding.speakButton.setOnClickListener {
+            // 새 SpeechRecognizer 를 만드는 팩토리 메서드
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this@MainActivity)
+            speechRecognizer.setRecognitionListener(recognitionListener)    // 리스너 설정
+            speechRecognizer.startListening(intent)                         // 듣기 시작
+        }
+    }
     private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= 23 &&
             ContextCompat.checkSelfPermission(

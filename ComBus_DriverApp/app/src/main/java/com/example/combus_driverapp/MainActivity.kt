@@ -14,8 +14,8 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    //private val user = MyApplication.user
-    //private val editor = user.edit()
+    private val user = MyApplication.user
+    private val editor = user.edit()
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener {
             val id = binding.driverNum.text.toString()
 
-            /*val call = RetrofitObject.getRetrofitService.login(RetrofitClient.requestlogin(id))
+            val call = RetrofitObject.getRetrofitService.login(RetrofitClient.requestlogin(id))
             call.enqueue(object : Callback<RetrofitClient.responselogin>{
                 override fun onResponse(
                     call: Call<RetrofitClient.responselogin>,
@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
                                 editor.putString("sessionid",sessionId)
                                 editor.apply()
                                 val intent = Intent(this@MainActivity,Driver_Home::class.java)
+                                intent.putExtra("driverId",response.data.driverId)
                                 startActivity(intent)
                             }else{
                                 Toast.makeText(this@MainActivity,response.detail,Toast.LENGTH_SHORT).show()
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                     val errorMessage = "Call Failed: ${t.message}"
                     Log.d("Retrofit", errorMessage)
                 }
-            })*/
+            })
 
             val showintent = Intent(this,Driver_Home::class.java)
             startActivity(showintent)

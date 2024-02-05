@@ -8,6 +8,8 @@ import com.example.combus_driverapp.databinding.ActivityBusstopDetailBinding
 
 class busstop_detail : AppCompatActivity() {
     private lateinit var binding: ActivityBusstopDetailBinding
+    val extras = intent.extras
+    val arsId = extras!!["arsId"] as Int
     private val booklist = listOf(
         booking("wait","시각장애인","성신여대입구","고속터미널"),
         booking("wait","휠체어","성신여대입구","고속터미널"),
