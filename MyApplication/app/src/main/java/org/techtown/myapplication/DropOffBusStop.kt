@@ -19,11 +19,9 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import org.techtown.myapplication.Retrofit.ApiManager_BoardingBusStop
 import org.techtown.myapplication.Retrofit.ApiManager_DropOffBusStop
 import org.techtown.myapplication.Retrofit.ApiManager_ReservationComplete
 import org.techtown.myapplication.Retrofit.ApiResponse
-import org.techtown.myapplication.Retrofit.BoardingStop
 import org.techtown.myapplication.Retrofit.DropOffStop
 import org.techtown.myapplication.Retrofit.LocationRequest
 import org.techtown.myapplication.Retrofit.ReservationComplete
@@ -32,7 +30,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.location.Location
 
 class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
@@ -41,11 +38,15 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mapView: MapView
     private var selectedDropOffBusStop: DropOffStop? = null
     private var busStops: List<DropOffStop>? = null
+    private var userId: Long = -1L // 사용자 ID를 저장할 변수 추가
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityDropOffBusStopBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Intent를 통해 전달된 데이터 받기
+        userId = intent.getLongExtra("userId", -1L) // 사용자 ID를 받아옴
 
         // 위치 권한이 허용되었는지 확인
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -250,7 +251,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
     private fun initializeMap() {
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mapView = findViewById(R.id.mapView)
+            mapView = findViewById(R.id.map_boarding)
             mapView.onCreate(null)
             mapView.getMapAsync(this)
             // 사용자의 현재 위치를 가져와 하차 정류소 목록을 업데이트

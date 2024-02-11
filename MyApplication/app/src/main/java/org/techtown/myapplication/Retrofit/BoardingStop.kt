@@ -49,7 +49,7 @@ data class BoardingStop(
 
 interface BoardingStopService {
     @Headers("Content-Type: application/json")
-    @POST("/reservation/startst")
+    @GET("/reservation/startst")
     fun getNearbyBusStops(@Body locationRequest: LocationRequest): Call<List<BoardingStop>>
 }
 
@@ -59,7 +59,7 @@ data class LocationRequest(
 )
 
 object ApiManager_BoardingBusStop {
-    private const val BASE_URL = "https://your-api-base-url.com/"
+    private const val BASE_URL = "http://34.64.189.150:8090/"
 
     fun create(): BoardingStopService {
         val retrofit = Retrofit.Builder()

@@ -26,6 +26,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.Manifest
+import android.os.AsyncTask
+import org.techtown.myapplication.Retrofit.LoginResponse
+import org.techtown.myapplication.Retrofit.ReservationData
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +37,9 @@ class MainActivity : AppCompatActivity() {
     // 음성인식 기능
     private lateinit var speechRecognizer: SpeechRecognizer
     private val RECORD_AUDIO_PERMISSION_CODE = 1
+
+    // 예약 정보를 담는 변수 선언
+    private var reservationData: ReservationData? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,62 +65,6 @@ class MainActivity : AppCompatActivity() {
             speechRecognizer.startListening(intent)
         }
 
-        binding.startButton.setOnClickListener {
-            val intent = Intent(this@MainActivity, Reserved::class.java)
-            startActivity(intent)
-
-            val userService = ApiManager_login.create().loginUser(LoginRequest("1234"))
-            val response = userService.execute()
-
-            if (response.isSuccessful) {
-                val loginResponse = response.body()
-                if (loginResponse?.status == "OK") {
-                    val userData = loginResponse.data
-
-                    val homeReservationService = ApiManager_homeReservation.create().getHomeReservation()
-                    val call = homeReservationService.enqueue(object :
-                        Callback<HomeReservationResponse> {
-                        override fun onResponse(
-                            call: Call<HomeReservationResponse>,
-                            response: Response<HomeReservationResponse>
-                        ) {
-                            if (response.isSuccessful) {
-                                val homeReservationResponse = response.body()
-                                if (homeReservationResponse?.status == "OK") {
-                                    val reservationData = homeReservationResponse.data
-                                    Log.d("MainActivity", "Reservation exists: ${reservationData?.boardingStop}")
-                                    val intent = Intent(this@MainActivity, Reserved::class.java)
-                                    intent.putExtra("reservationData", reservationData)
-                                    startActivity(intent)
-                                    finish()
-                                } else {
-                                    Log.d("MainActivity", "No reservation exists")
-                                    val intent = Intent(this@MainActivity, NoReservation::class.java)
-                                    startActivity(intent)
-                                    finish()
-                                }
-                            } else {
-                                Log.d("MainActivity", "Network error or server response error: ${response.code()}")
-                            }
-                        }
-
-                        override fun onFailure(call: Call<HomeReservationResponse>, t: Throwable) {
-                            Log.d("MainActivity", "Call failed: ${t.message}")
-                        }
-                    })
-
-                    val intent = Intent(this@MainActivity, Reserved::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    val detail = loginResponse?.detail ?: "Unknown error"
-                    println("Login failed: $detail")
-                }
-            } else {
-                println("Network error or server response error: ${response.code()}")
-            }
-        }
-
         // 음성인식 기능 구현 시작
 
         //권한 설정
@@ -132,7 +82,181 @@ class MainActivity : AppCompatActivity() {
             speechRecognizer.setRecognitionListener(recognitionListener)    // 리스너 설정
             speechRecognizer.startListening(intent)                         // 듣기 시작
         }
+
+        binding.startButton.setOnClickListener {
+            // AsyncTask를 사용하여 백그라운드 스레드에서 네트워크 작업 실행
+            NetworkTask().execute()
+        }
     }
+
+    private inner class NetworkTask : AsyncTask<Void, Void, Response<LoginResponse>>() {
+
+        override fun doInBackground(vararg params: Void?): Response<LoginResponse>? {
+            try {
+                // Retrofit을 사용하여 네트워크 호출
+                val service = ApiManager_login.create()
+                val membershipNumberEditText = findViewById<EditText>(R.id.membershipNumber)
+                val loginId = membershipNumberEditText.text.toString()
+
+                val loginRequest = LoginRequest(loginId)
+                return service.loginUser(loginRequest).execute()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+
+        override fun onPostExecute(result: Response<LoginResponse>?) {
+            super.onPostExecute(result)
+            // 네트워크 작업이 완료된 후에 UI를 업데이트하는 코드
+            if (result != null && result.isSuccessful) {
+                // 성공적으로 응답을 받았을 때의 처리
+                val loginResponse = result.body()
+                handleNetworkResponse(loginResponse)
+            } else {
+                // 네트워크 작업 실패 시의 처리
+                // 실패 상황에 대한 메시지 또는 로직 추가
+                Toast.makeText(
+                    applicationContext,
+                    "로그인 api 네트워크 작업 실패",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun handleNetworkResponse(response: LoginResponse?) {
+        // 응답을 처리하는 코드
+        if (response != null && response.code == "SIGNIN_SUCCESS") {
+            // 로그인 성공 처리
+            val userData = response.data
+            // 여기서 userData를 사용하여 세션 생성 또는 화면 전환 등을 수행할 수 있습니다.
+
+            // 예시로 성공한 경우 Toast 메시지 출력
+            Toast.makeText(
+                applicationContext,
+                "로그인 성공 - 사용자: ${userData?.name}",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            // 추가적인 로그
+            Log.d("MainActivity", "로그인 성공 - 사용자: ${userData?.name}")
+
+            if (userData?.id != null) {
+                checkReservation(userData.id)
+            }
+
+            userData?.cookie?.let {
+                ApiManager_homeReservation.setUserCookie(it)
+                // 여기에서 예약 내역을 확인하도록 수정
+            }
+        } else {
+            // 로그인 실패 처리
+            // response.detail에 실패 이유가 들어있을 수 있습니다.
+            Toast.makeText(
+                applicationContext,
+                "로그인 실패: ${response?.detail ?: "알 수 없는 이유"}",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            // 추가적인 로그
+            Log.d("MainActivity", "로그인 실패: ${response?.detail ?: "알 수 없는 이유"}")
+        }
+    }
+
+    // 예약 내역 확인 함수
+    private fun checkReservation(userId: Long?) {
+        // AsyncTask를 사용하여 백그라운드 스레드에서 네트워크 작업 실행
+        val checkReservationTask = CheckReservationTask()
+        checkReservationTask.execute(userId)
+
+        // AsyncTask가 완료될 때까지 기다리지 않고 바로 다음으로 진행하지 않도록 수정
+        val homeReservationResponse = checkReservationTask.get()
+
+        Toast.makeText(
+            applicationContext,
+            "예약 api가 실행되긴 하나봐",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        if (homeReservationResponse != null && homeReservationResponse.isSuccessful) {
+            val response = homeReservationResponse.body()
+
+            /*
+            Toast.makeText(
+                applicationContext,
+                "예약 api 응답이 과연 오는가 두둥탁",
+                Toast.LENGTH_SHORT
+            ).show()*/
+
+            Toast.makeText(
+                applicationContext,
+                "로그인 성공 - 사용자: ${response?.data?.date}",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            /*
+            if (response?.detail == "예약 내역을 성공적으로 불러왔습니다") {
+                // 예약 내역이 있을 경우 ReservedActivity로 이동
+                val reservedIntent = Intent(this@MainActivity, Reserved::class.java)
+                startActivity(reservedIntent)
+                finish() // 현재 액티비티 종료
+            } else if (response?.detail == "예약 내역 존재하지 않습니다") {
+                // 예약 내역이 없을 경우 NoReservationActivity로 이동
+                val noReservationIntent = Intent(this@MainActivity, NoReservation::class.java)
+                startActivity(noReservationIntent)
+                finish() // 현재 액티비티 종료
+            }*/
+
+
+            if (response?.data != null) {
+                // 예약 내역이 있을 경우 ReservedActivity로 이동
+                val reservedIntent = Intent(this@MainActivity, Reserved::class.java)
+                reservedIntent.putExtra("reservationData", response.data)
+                startActivity(reservedIntent)
+                finish() // 현재 액티비티 종료
+            } else {
+                // 예약 내역이 없을 경우 NoReservationActivity로 이동
+                val noReservationIntent = Intent(this@MainActivity, NoReservation::class.java)
+                // 사용자 ID를 전달
+                noReservationIntent.putExtra("userId", userId)
+                startActivity(noReservationIntent)
+                finish() // 현재 액티비티 종료
+            }
+        } else {
+            // 네트워크 작업 실패 시의 처리
+            // 실패 상황에 대한 메시지 또는 로직 추가
+            Toast.makeText(
+                applicationContext,
+                "예약 api 네트워크 작업 실패",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private inner class CheckReservationTask : AsyncTask<Long?, Void, Response<HomeReservationResponse>>() {
+
+        override fun doInBackground(vararg params: Long?): Response<HomeReservationResponse>? {
+            try {
+
+
+                // Retrofit을 사용하여 네트워크 호출
+                val service = ApiManager_homeReservation.create()
+                return service.getHomeReservation(params.firstOrNull()).execute()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+    }
+
+
+
+
+
+
+
+
     private fun requestPermission() {
         if (Build.VERSION.SDK_INT >= 23 &&
             ContextCompat.checkSelfPermission(
