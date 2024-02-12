@@ -1,5 +1,6 @@
 package org.techtown.myapplication
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -30,116 +31,282 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.app.AlertDialog
+import android.graphics.Color
+import android.location.Criteria
 import android.location.Location
+import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
+import android.widget.Button
+import android.widget.Toast
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.Marker
+import org.techtown.myapplication.Retrofit.ApiManager_BoardingBusStop
+import org.techtown.myapplication.Retrofit.BoardingStop
 
 class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var googleMap: GoogleMap
     private lateinit var mapView: MapView
+    private var isMapReady = false
+    private var dropOffBusStops: List<DropOffStop>? = null
     private var selectedDropOffBusStop: DropOffStop? = null
     private var busStops: List<DropOffStop>? = null
     private var userId: Long = -1L // 사용자 ID를 저장할 변수 추가
+    private var arsId_boarding: String? = null
+    private var busRouteId: String? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityDropOffBusStopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val backButton = findViewById<Button>(R.id.backButton5)
+        backButton.setOnClickListener {
+            val intent = Intent(this, NoReservation::class.java)
+            startActivity(intent)
+        }
+
         // Intent를 통해 전달된 데이터 받기
         userId = intent.getLongExtra("userId", -1L) // 사용자 ID를 받아옴
 
-        // 위치 권한이 허용되었는지 확인
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            initializeMap()
-
-            // 사용자의 현재 위치를 가져와 하차 정류소 목록을 업데이트
-            fetchAndDisplayDropOffBusStops()
-        } else {
-            requestLocationPermission()
-        }
-
         val searchBox = findViewById<EditText>(R.id.searchBox_drop_off)
         searchBox.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                // 텍스트가 변경된 후 호출되는 부분
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // 텍스트 변경 전 호출되는 부분
-            }
-
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // 텍스트가 변경될 때 호출되는 부분
                 val query = s.toString()
                 searchBusStops(query)
             }
         })
 
-        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer)
+        mapView = findViewById(R.id.map_drop_off)
+        mapView.onCreate(null)
 
-        for (i in 0 until resultContainer.childCount) {
-            val cardView = resultContainer.getChildAt(i) as? CardView
-            cardView?.setOnClickListener {
-                //선택한 하차 정류소에 대한 정보를 저장
-                val position = resultContainer.indexOfChild(cardView)
-                selectedDropOffBusStop = busStops?.get(position)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-                navigateToReservedPage()
-                //예약 페이지로 이동+서버에 예약 정보를 전송+확인창 띄우기
+        // 위치 권한 체크 및 초기화 함수 호출을 onMapReady 콜백 내부로 이동
+        initializeMap()
+    }
+
+    private fun checkLocationPermission(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            val dialogBuilder = androidx.appcompat.app.AlertDialog.Builder(this)
+            dialogBuilder.setMessage("이 앱을 사용하려면 위치 권한이 필요합니다. 권한을 부여하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("네") { dialog, id ->
+                    ActivityCompat.requestPermissions(
+                        this@DropOffBusStop,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        DropOffBusStop.REQUEST_LOCATION_PERMISSION
+                    )
+                }
+                .setNegativeButton("아니오") { dialog, id ->
+                    Toast.makeText(this, "위치 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+            val alert = dialogBuilder.create()
+            alert.setTitle("권한 요청")
+            alert.show()
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                DropOffBusStop.REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            DropOffBusStop.REQUEST_LOCATION_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initializeMap()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "위치 권한이 거부되었습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
     }
 
-    private fun fetchAndDisplayDropOffBusStops() {
-        // 위치 권한이 허용된 경우에만 현재 위치 정보를 가져옴
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    companion object {
+        private const val REQUEST_LOCATION_PERMISSION = 1001
+    }
 
-            location?.let {
-                val locationRequest = LocationRequest(it.longitude, it.latitude)
-                val busStopService = ApiManager_DropOffBusStop.create()
+    private fun initializeMap() {
+        mapView.getMapAsync(this)
+    }
 
-                busStopService.getDropOffBusStops(locationRequest)
-                    .enqueue(object : Callback<List<DropOffStop>> {
-                        override fun onResponse(
-                            call: Call<List<DropOffStop>>,
-                            response: Response<List<DropOffStop>>
-                        ) {
-                            if (response.isSuccessful) {
-                                busStops = response.body()
+    private fun getCurrentLocationAndLoadBusStops() {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val criteria = Criteria()
+        criteria.accuracy = Criteria.ACCURACY_FINE // 정확도를 설정합니다. ACCURACY_FINE은 GPS를 사용합니다.
 
-                                // 구글 지도에 버스 정류장 마커 표시
-                                for (busStop in busStops.orEmpty()) {
-                                    val busStopLatLng = LatLng(busStop.latitude, busStop.longitude)
-                                    googleMap.addMarker(
-                                        MarkerOptions().position(busStopLatLng).title(busStop.name)
-                                    )?.snippet = "정류장 이름: ${busStop.name}"
-                                }
+        val locationProvider: String? = locationManager.getBestProvider(criteria, true)
 
-                                // 초기에 가져온 목록을 UI에 표시
-                                updateUIWithSearchResults(busStops)
-                            } else {
-                                // API 호출은 성공했지만 서버에서 오류 응답을 받은 경우
-                                // response.code(), response.message() 등을 활용하여 처리
+        if (checkLocationPermission()) {
+            val location: Location? = locationProvider?.let { locationManager.getLastKnownLocation(it) }
+
+            if (location != null) {
+                Log.d("CurrentLocation", "Latitude: ${location.latitude}, Longitude: ${location.longitude}")
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                getDropOffBusStops(arsId_boarding, busRouteId)
+            } else {
+                Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            requestLocationPermission()
+        }
+    }
+
+    private fun getDropOffBusStops(arsId_boarding: String?, busRouteId: String?) {
+        val busStopService = ApiManager_DropOffBusStop.create()
+
+        busStopService.getDropOffBusStops(arsId_boarding, busRouteId)
+            .enqueue(object : Callback<List<DropOffStop>> {
+                override fun onResponse(call: Call<List<DropOffStop>>, response: Response<List<DropOffStop>>) {
+                    if (response.isSuccessful) {
+                        // 성공적인 응답을 로깅합니다.
+                        Log.d("OMG", "Successful response: ${response.body()}")
+                        dropOffBusStops = response.body()
+
+                        val message = "주변 버스 정류장 수: ${dropOffBusStops?.size ?: 0}"
+                        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+
+                        dropOffBusStops?.let { busStops ->
+                            for (busStop in busStops) {
+                                val busStopLatLng = LatLng(busStop.latitude, busStop.longitude)
+                                val marker = googleMap.addMarker(MarkerOptions().position(busStopLatLng).title(busStop.name))
+                                marker?.snippet = "ARS 번호: ${busStop.arsId}"
                             }
+                            googleMap.setOnMarkerClickListener { clickedMarker ->
+                                showInfoWindow(clickedMarker)
+                                true
+                            }
+                            updateUIWithDropOffBusStops(busStops)
                         }
+                    } else {
+                        // Handle unsuccessful response
+                        // 실패한 응답을 로깅합니다.
+                        Log.e("OMG", "Unsuccessful response: ${response.code()}")
+                        Toast.makeText(applicationContext, "API 호출에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
 
-                        override fun onFailure(call: Call<List<DropOffStop>>, t: Throwable) {
-                            // API 호출에 실패한 경우
-                            // 에러 메시지를 출력하거나 다른 예외 처리 작업을 수행
-                        }
-                    })
+                override fun onFailure(call: Call<List<DropOffStop>>, t: Throwable) {
+                    // Handle failure
+                    // 호출 실패를 로깅합니다.
+                    Log.e("OMG", "API call failed", t)
+                    Toast.makeText(applicationContext, "API 호출에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun showInfoWindow(marker: Marker) {
+        marker.showInfoWindow()
+    }
+
+    private fun searchBusStops(query: String) {
+        val filteredBusStops = dropOffBusStops?.filter { it.name.contains(query, ignoreCase = true) }
+        updateUIWithSearchResults(filteredBusStops)
+    }
+
+    private fun updateUIWithDropOffBusStops(busStops: List<DropOffStop>) {
+        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer_drop_off)
+        resultContainer.removeAllViews()
+
+        busStops.forEach { busStop ->
+            val cardView = CardView(this)
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            layoutParams.topMargin = 8
+            cardView.layoutParams = layoutParams
+            cardView.radius = 16f
+            cardView.useCompatPadding = true
+            cardView.isClickable = true // 이 부분을 추가합니다.
+
+            val textView = TextView(this)
+            textView.text = "${busStop.name} (${busStop.arsId})"
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f) // 글씨 크기 조정
+            textView.gravity = Gravity.CENTER_VERTICAL // 세로로 중앙 정렬
+            textView.setTextColor(Color.BLACK) // 텍스트 색상을 검정색으로 설정
+
+            cardView.addView(textView)
+            resultContainer.addView(cardView)
+
+            // CardView를 클릭했을 때 BusSelection 페이지로 이동하는 클릭 리스너 추가
+            cardView.setOnClickListener {
+                navigateToReservedPage()
             }
+
+            // CardView 크기 조정
+            val params = cardView.layoutParams as LinearLayout.LayoutParams
+            params.height = resources.getDimensionPixelSize(R.dimen.cardview_height)
+            cardView.layoutParams = params
         }
     }
 
+    private fun updateUIWithSearchResults(busStops: List<DropOffStop>?) {
+        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer_drop_off)
+        resultContainer.removeAllViews()
 
-    private fun navigateToDetailsActivity(busStop: DropOffStop) {
-        val intent = Intent(this, BusSelection::class.java)
+        busStops?.forEach { busStop ->
+            val cardView = CardView(this)
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            layoutParams.topMargin = 8
+            cardView.layoutParams = layoutParams
+            cardView.radius = 16f
+            cardView.useCompatPadding = true
+
+            val textView = TextView(this)
+            textView.text = "${busStop.name} (${busStop.arsId})"
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+            textView.gravity = Gravity.CENTER_VERTICAL
+            textView.setTextColor(Color.BLACK)
+            textView.setOnClickListener {
+                navigateToReservedPage()
+            }
+
+            cardView.addView(textView)
+            resultContainer.addView(cardView)
+
+            // CardView 크기 조정
+            val params = cardView.layoutParams as LinearLayout.LayoutParams
+            params.height = resources.getDimensionPixelSize(R.dimen.cardview_height)
+            cardView.layoutParams = params
+        }
+    }
+
+    /*private fun navigateToDetailsActivity(busStop: DropOffStop) {
+        val intent = Intent(this, Reserved::class.java)
         intent.putExtra("busStop", busStop)
         startActivity(intent)
-    }
+    }*/
 
     private fun sendReservationToServer(reservation: ReservationComplete) {
         val apiManager = ApiManager_ReservationComplete.create()
@@ -221,101 +388,16 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
             .show()
     }
 
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-            REQUEST_LOCATION_PERMISSION
-        )
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            REQUEST_LOCATION_PERMISSION -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initializeMap()
-                } else {
-                    // 권한이 거부된 경우 처리
-                    // 사용자에게 권한이 필요하다는 안내 메시지를 보여주거나 다른 처리를 수행
-                }
-            }
-            else -> {
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-            }
-        }
-    }
-
-    private fun initializeMap() {
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mapView = findViewById(R.id.map_boarding)
-            mapView.onCreate(null)
-            mapView.getMapAsync(this)
-            // 사용자의 현재 위치를 가져와 하차 정류소 목록을 업데이트
-            fetchAndDisplayDropOffBusStops()
-        } else {
-            requestLocationPermission()
-        }
-    }
-
-
-    /*
-    private fun initializeMap() {
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            val locationRequest = LocationRequest(126.9723, 37.5562)
-            val busStopService = ApiManager_DropOffBusStop.create()
-
-            // 하차 정류소 정보 가져오기
-            busStopService.getDropOffBusStops()
-                .enqueue(object : Callback<List<DropOffStop>> {
-                    override fun onResponse(
-                        call: Call<List<DropOffStop>>,
-                        response: Response<List<DropOffStop>>
-                    ) {
-                        if (response.isSuccessful) {
-                            busStops = response.body()
-
-                            // 구글 지도에 버스 정류장 마커 표시
-                            for (busStop in busStops.orEmpty()) {
-                                val busStopLatLng = LatLng(busStop.latitude, busStop.longitude)
-                                googleMap.addMarker(
-                                    MarkerOptions().position(busStopLatLng).title(busStop.name)
-                                )
-                            }
-                        } else {
-                            // API 호출은 성공했지만 서버에서 오류 응답을 받은 경우
-                            // response.code(), response.message() 등을 활용하여 처리
-                        }
-                    }
-
-                    override fun onFailure(call: Call<List<DropOffStop>>, t: Throwable) {
-                        // API 호출에 실패한 경우
-                        // 에러 메시지를 출력하거나 다른 예외 처리 작업을 수행
-                    }
-                })
-
-            mapView = findViewById(R.id.mapView)
-            mapView.onCreate(null)
-            mapView.getMapAsync(this)
-        } else {
-            requestLocationPermission()
-        }
-    }*/
-
     override fun onMapReady(gMap: GoogleMap) {
         googleMap = gMap
+        isMapReady = true
 
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-
-            if (location != null) {
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                googleMap.addMarker(MarkerOptions().position(currentLatLng).title("현재 위치"))
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+        // 위치 권한 체크 후 현재 위치 정보를 가져와서 버스 정류장 로드
+        if (checkLocationPermission()) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    getCurrentLocationAndLoadBusStops()
+                }
             }
         } else {
             requestLocationPermission()
@@ -345,86 +427,5 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
     override fun onLowMemory() {
         super.onLowMemory()
         mapView.onLowMemory()
-    }
-
-    private fun searchBusStops(query: String) {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        var location: Location? = null
-
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            // 위치 정보를 사용하는 코드...
-        } else {
-            // 위치 권한이 없는 경우 처리
-            // 사용자에게 권한을 요청하거나 다른 처리를 수행
-            requestLocationPermission()
-        }
-
-        location?.let {
-            val locationRequest = LocationRequest(it.longitude, it.latitude)
-            val busStopService = ApiManager_DropOffBusStop.create()
-
-            busStopService.getDropOffBusStops(locationRequest)
-                .enqueue(object : Callback<List<DropOffStop>> {
-                    override fun onResponse(
-                        call: Call<List<DropOffStop>>,
-                        response: Response<List<DropOffStop>>
-                    ) {
-                        if (response.isSuccessful) {
-                            val busStops = response.body()
-                            val filteredBusStops = busStops?.filter { it.name.contains(query, ignoreCase = true) }
-
-                            updateUIWithSearchResults(filteredBusStops)
-                        } else {
-                            // API 호출은 성공했지만 서버에서 오류 응답을 받은 경우
-                            // response.code(), response.message() 등을 활용하여 처리
-                        }
-                    }
-
-                    override fun onFailure(call: Call<List<DropOffStop>>, t: Throwable) {
-                        // API 호출에 실패한 경우
-                        // 에러 메시지를 출력하거나 다른 예외 처리 작업을 수행
-                    }
-                })
-        }
-    }
-
-
-    private fun updateUIWithSearchResults(busStops: List<DropOffStop>?) {
-        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer)
-
-        // 기존의 뷰들을 모두 제거
-        resultContainer.removeAllViews()
-
-        // 검색 결과를 LinearLayout에 추가
-        busStops?.forEach { busStop ->
-            // CardView로 감싼 레이아웃 추가
-            val cardView = CardView(this)
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            layoutParams.topMargin = 8
-            cardView.layoutParams = layoutParams
-            cardView.radius = 16f
-            cardView.useCompatPadding = true
-
-            // TextView 추가
-            val textView = TextView(this)
-            textView.text = busStop.name
-            textView.setOnClickListener {
-                navigateToDetailsActivity(busStop)
-            }
-
-            // TextView를 CardView에 추가
-            cardView.addView(textView)
-
-            // CardView를 resultContainer에 추가
-            resultContainer.addView(cardView)
-        }
-    }
-
-    companion object {
-        private const val REQUEST_LOCATION_PERMISSION = 1001
     }
 }

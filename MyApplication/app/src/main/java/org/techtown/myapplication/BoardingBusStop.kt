@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import org.techtown.myapplication.Retrofit.ApiManager_BoardingBusStop
 import org.techtown.myapplication.Retrofit.BoardingStop
-import org.techtown.myapplication.Retrofit.LocationRequest
 import org.techtown.myapplication.databinding.ActivityBoardingBusStopBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -174,10 +173,6 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun getNearbyBusStops(location: Location) {
-
-        // 토스트 메시지로 gpsX와 gpsY 값을 확인
-        //Toast.makeText(applicationContext, "Request Body: gpsX=${locationRequest.gpsX}, gpsY=${locationRequest.gpsY}", Toast.LENGTH_SHORT).show()
-
         val busStopService = ApiManager_BoardingBusStop.create()
 
         busStopService.getNearbyBusStops(location.longitude, location.latitude)
@@ -273,7 +268,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun updateUIWithSearchResults(busStops: List<BoardingStop>?) {
-        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer)
+        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer_boarding)
         resultContainer.removeAllViews()
 
         busStops?.forEach { busStop ->

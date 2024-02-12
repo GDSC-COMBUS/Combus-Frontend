@@ -78,7 +78,7 @@
 
             <!-- 추가: CardView로 감싼 레이아웃 -->
             <LinearLayout
-                android:id="@+id/resultContainer"
+                android:id="@+id/resultContainer_boarding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
