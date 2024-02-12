@@ -308,6 +308,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun navigateToDetailsActivity(busStop: BoardingStop) {
+        Log.d("wow", "Navigating to BusSelection page...")
         val intent = Intent(this, BusSelection::class.java)
         intent.putExtra("busStop_name", busStop.name) // 버스 정류장 이름 전달
         intent.putExtra("arsId", busStop.arsId) // arsId 전달

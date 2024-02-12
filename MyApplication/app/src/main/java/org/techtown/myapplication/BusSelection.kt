@@ -2,6 +2,7 @@ package org.techtown.myapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -20,20 +21,22 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var mapView: MapView
     private var currentMarker: Marker? = null
-    private lateinit var busStopName: String
-    private lateinit var arsId: String
-    private var busstop_X: Double = 0.0 // 초기값 설정
-    private var busstop_Y: Double = 0.0 // 초기값 설정
+    private var busstop_name: String = ""
+    private var arsId: String = ""
+    private var busstop_X: Double = 0.0
+    private var busstop_Y: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("wow", "BusSelection onCreate called")
         binding = ActivityBusSelectionBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         val extras = intent.extras
-        val busstop_name = extras!!["busStop_name"].toString() // 버스 정류장 이름 받기
-        busstop_X = extras!!["gpsX"] as Double // gpsX 받기
-        busstop_Y = extras!!["gpsY"] as Double // gpsY 받기
+        busstop_name = extras?.getString("busStop_name") ?: ""
+        arsId = extras?.getString("arsId") ?: ""
+        busstop_X = extras?.getDouble("gpsX") ?: 0.0
+        busstop_Y = extras?.getDouble("gpsY") ?: 0.0
 
         binding.textView5.text = busstop_name
 
