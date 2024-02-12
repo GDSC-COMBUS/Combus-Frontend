@@ -10,6 +10,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 data class BoardingStop(
     @SerializedName("arsId") val arsId: String,
@@ -50,7 +51,10 @@ data class BoardingStop(
 interface BoardingStopService {
     @Headers("Content-Type: application/json")
     @GET("/reservation/startst")
-    fun getNearbyBusStops(@Body locationRequest: LocationRequest): Call<List<BoardingStop>>
+    fun getNearbyBusStops(
+        @Query("gpsX") gpsX: Double,
+        @Query("gpsY") gpsY: Double
+    ): Call<List<BoardingStop>>
 }
 
 data class LocationRequest(

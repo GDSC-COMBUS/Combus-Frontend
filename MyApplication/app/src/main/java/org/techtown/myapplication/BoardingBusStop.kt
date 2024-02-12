@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
@@ -12,6 +13,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -53,6 +57,12 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
         val binding = ActivityBoardingBusStopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val backButton = findViewById<Button>(R.id.backButton2)
+        backButton.setOnClickListener {
+            val intent = Intent(this, NoReservation::class.java)
+            startActivity(intent)
+        }
+
         userId = intent.getLongExtra("userId", -1L)
 
         val searchBox = findViewById<EditText>(R.id.searchBox_boarding)
@@ -67,15 +77,11 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
         mapView = findViewById(R.id.map_boarding)
         mapView.onCreate(null)
-        mapView.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        if (checkLocationPermission()) {
-            initializeMap()
-        } else {
-            requestLocationPermission()
-        }
+        // 위치 권한 체크 및 초기화 함수 호출을 onMapReady 콜백 내부로 이동
+        initializeMap()
     }
 
     private fun checkLocationPermission(): Boolean {
@@ -156,7 +162,6 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
             if (location != null) {
                 Log.d("CurrentLocation", "Latitude: ${location.latitude}, Longitude: ${location.longitude}")
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                googleMap.addMarker(MarkerOptions().position(currentLatLng).title("현재 위치"))
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
                 getNearbyBusStops(location)
             } else {
@@ -169,14 +174,13 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun getNearbyBusStops(location: Location) {
-        val locationRequest = LocationRequest(location.longitude, location.latitude)
 
         // 토스트 메시지로 gpsX와 gpsY 값을 확인
-        Toast.makeText(applicationContext, "Request Body: gpsX=${locationRequest.gpsX}, gpsY=${locationRequest.gpsY}", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(applicationContext, "Request Body: gpsX=${locationRequest.gpsX}, gpsY=${locationRequest.gpsY}", Toast.LENGTH_SHORT).show()
 
         val busStopService = ApiManager_BoardingBusStop.create()
 
-        busStopService.getNearbyBusStops(locationRequest)
+        busStopService.getNearbyBusStops(location.longitude, location.latitude)
             .enqueue(object : Callback<List<BoardingStop>> {
                 override fun onResponse(call: Call<List<BoardingStop>>, response: Response<List<BoardingStop>>) {
                     if (response.isSuccessful) {
@@ -223,38 +227,11 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun searchBusStops(query: String) {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                location?.let {
-                    val locationRequest = LocationRequest(location.longitude, location.latitude)
-                    val busStopService = ApiManager_BoardingBusStop.create()
-
-                    busStopService.getNearbyBusStops(locationRequest)
-                        .enqueue(object : Callback<List<BoardingStop>> {
-                            override fun onResponse(call: Call<List<BoardingStop>>, response: Response<List<BoardingStop>>) {
-                                if (response.isSuccessful) {
-                                    // 성공적인 응답을 로깅합니다.
-                                    Log.d("OMG", "Successful response: ${response.body()}")
-                                    val busStops = response.body()
-                                    val filteredBusStops = busStops?.filter { it.name.contains(query, ignoreCase = true) }
-
-                                    updateUIWithSearchResults(filteredBusStops)
-                                } else {
-                                    // Handle unsuccessful response
-                                    // 실패한 응답을 로깅합니다.
-                                    Log.e("OMG", "Unsuccessful response: ${response.code()}")
-                                }
-                            }
-
-                            override fun onFailure(call: Call<List<BoardingStop>>, t: Throwable) {
-                                // Handle failure
-                                // 호출 실패를 로깅합니다.
-                                Log.e("OMG", "API call failed", t)
-                            }
-                        })
-                }
-            }
+        val filteredBusStops = nearbyBusStops?.filter { it.name.contains(query, ignoreCase = true) }
+        updateUIWithSearchResults(filteredBusStops)
     }
+
+
 
     private fun updateUIWithNearbyBusStops(busStops: List<BoardingStop>) {
         val resultContainer = findViewById<LinearLayout>(R.id.resultContainer)
@@ -270,17 +247,30 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
             cardView.layoutParams = layoutParams
             cardView.radius = 16f
             cardView.useCompatPadding = true
+            cardView.isClickable = true // 이 부분을 추가합니다.
 
             val textView = TextView(this)
             textView.text = "${busStop.name} (${busStop.arsId})"
-            textView.setOnClickListener {
-                navigateToDetailsActivity(busStop)
-            }
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f) // 글씨 크기 조정
+            textView.gravity = Gravity.CENTER_VERTICAL // 세로로 중앙 정렬
+            textView.setTextColor(Color.BLACK) // 텍스트 색상을 검정색으로 설정
 
             cardView.addView(textView)
             resultContainer.addView(cardView)
+
+            // CardView를 클릭했을 때 BusSelection 페이지로 이동하는 클릭 리스너 추가
+            cardView.setOnClickListener {
+                navigateToDetailsActivity(busStop)
+            }
+
+            // CardView 크기 조정
+            val params = cardView.layoutParams as LinearLayout.LayoutParams
+            params.height = resources.getDimensionPixelSize(R.dimen.cardview_height)
+            cardView.layoutParams = params
         }
     }
+
+
 
     private fun updateUIWithSearchResults(busStops: List<BoardingStop>?) {
         val resultContainer = findViewById<LinearLayout>(R.id.resultContainer)
@@ -298,33 +288,45 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
             cardView.useCompatPadding = true
 
             val textView = TextView(this)
-            textView.text = busStop.name
+            textView.text = "${busStop.name} (${busStop.arsId})"
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+            textView.gravity = Gravity.CENTER_VERTICAL
+            textView.setTextColor(Color.BLACK)
             textView.setOnClickListener {
                 navigateToDetailsActivity(busStop)
             }
 
             cardView.addView(textView)
             resultContainer.addView(cardView)
+
+            // CardView 크기 조정
+            val params = cardView.layoutParams as LinearLayout.LayoutParams
+            params.height = resources.getDimensionPixelSize(R.dimen.cardview_height)
+            cardView.layoutParams = params
         }
     }
 
+
     private fun navigateToDetailsActivity(busStop: BoardingStop) {
         val intent = Intent(this, BusSelection::class.java)
-        intent.putExtra("busStop", busStop) // 수정된 부분
-        intent.putExtra("gpsX", busStop.longitude)
-        intent.putExtra("gpsY", busStop.latitude)
+        intent.putExtra("busStop_name", busStop.name) // 버스 정류장 이름 전달
+        intent.putExtra("arsId", busStop.arsId) // arsId 전달
+        intent.putExtra("gpsX", busStop.latitude) // gpsX 전달
+        intent.putExtra("gpsY", busStop.longitude) // gpsY 전달
         startActivity(intent)
     }
+
+
 
     override fun onMapReady(gMap: GoogleMap) {
         googleMap = gMap
         isMapReady = true
 
-        // 수정된 코드: 주변 버스 정류장들의 정보를 가져와서 지도에 표시합니다.
+        // 위치 권한 체크 후 현재 위치 정보를 가져와서 버스 정류장 로드
         if (checkLocationPermission()) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
-                    getNearbyBusStops(location)
+                    getCurrentLocationAndLoadBusStops()
                 }
             }
         } else {

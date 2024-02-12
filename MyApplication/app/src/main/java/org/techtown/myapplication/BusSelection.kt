@@ -20,15 +20,20 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var mapView: MapView
     private var currentMarker: Marker? = null
+    private lateinit var busStopName: String
+    private lateinit var arsId: String
+    private var busstop_X: Double = 0.0 // 초기값 설정
+    private var busstop_Y: Double = 0.0 // 초기값 설정
 
-    val extras = intent.extras
-    val busstop_name = extras!!["busStop_name"].toString()
-    val busstop_X = extras!!["gpsX"]
-    val busstop_Y = extras!!["gpsY"]
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityBusSelectionBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        val extras = intent.extras
+        val busstop_name = extras!!["busStop_name"].toString() // 버스 정류장 이름 받기
+        busstop_X = extras!!["gpsX"] as Double // gpsX 받기
+        busstop_Y = extras!!["gpsY"] as Double // gpsY 받기
 
         binding.textView5.text = busstop_name
 
