@@ -11,39 +11,42 @@ import com.example.combus_driverapp.connection.RetrofitClient
 import com.example.combus_driverapp.databinding.HomeListItemBinding
 import timber.log.Timber
 
-class busstop_list_adapter(private val busstoplist: List<RetrofitClient.homebusStopList>,private val busPos:List<RetrofitClient.homebusPos>):RecyclerView.Adapter<busstop_list_adapter.busstop_list_ViewHolder>() {
+class busstop_list_adapter(private var busstoplist: List<RetrofitClient.homebusStopList>, private var stSeq:Int, private var stopFlag:Boolean):RecyclerView.Adapter<busstop_list_adapter.busstop_list_ViewHolder>() {
 
     //private val dialog = Dialog(context:Context)
     class busstop_list_ViewHolder(val binding: HomeListItemBinding):
             RecyclerView.ViewHolder(binding.root){
         private val context = binding.root.context
-                fun bind(busstop:RetrofitClient.homebusStopList,busPos:RetrofitClient.homebusPos){
+                fun bind(busstop:RetrofitClient.homebusStopList,stSeq:Int, stopFlag:Boolean){
                     binding.txtBusstopNameItem.text = busstop.name
                     binding.txtBusstopNumItem.text = busstop.arsId.toString()
                     if (busstop.wheelchair == true)
                         binding.wheelchairIcon.visibility = View.VISIBLE
                     else binding.wheelchairIcon.visibility = View.GONE
-                    if (busPos.arsId == busstop.arsId){
-                        if (busPos.stopFlag == true)
+                    if (stSeq-1 == busstop.seq){
+                        if (stopFlag == false)
                             binding.imageView7.setImageResource(R.drawable.home_bus)
                         //else binding.imageView7.setImageResource(R.drawable.home_busstop_base)
                     }
                     else binding.imageView7.setImageResource(R.drawable.home_busstop_base)
+
                     if (busstop.reserved_cnt>0) {
                         binding.txtBusstopBookNumItem.visibility = View.VISIBLE
                         binding.txtBusstopBookNumItem.text = "예약 ${busstop.reserved_cnt}"
                     }
                     else binding.txtBusstopBookNumItem.visibility = View.GONE
+
                     if (busstop.drop_cnt>0) {
                         binding.txtBusstopOutNumItem.visibility = View.VISIBLE
                         binding.txtBusstopOutNumItem.text = "하차 ${busstop.drop_cnt}"
                     }
-                    else binding.txtBusstopBookNumItem.visibility = View.GONE
+                    else binding.txtBusstopOutNumItem.visibility = View.GONE
 
 
 
                     itemView.setOnClickListener {
                         val intent = Intent(context,busstop_detail::class.java)
+                        intent.putExtra("arsId",busstop.arsId)
                         intent.putExtra("busstop_name",busstop.name)
                         intent.putExtra("busstop_num",busstop.arsId)
                         intent.putExtra("boarding_num",busstop.reserved_cnt)
@@ -52,6 +55,12 @@ class busstop_list_adapter(private val busstoplist: List<RetrofitClient.homebusS
                     }
                 }
             }
+    fun updateData(busStopList: List<RetrofitClient.homebusStopList>, stSeq:Int, stopFlag:Boolean) {
+        this.busstoplist = busStopList
+        this.stSeq = stSeq
+        this.stopFlag = stopFlag
+        notifyDataSetChanged() // 데이터 변경을 RecyclerView에 알림
+    }
     /*fun MyDig(){
         dialog
     }*/
@@ -68,8 +77,9 @@ class busstop_list_adapter(private val busstoplist: List<RetrofitClient.homebusS
     override fun onBindViewHolder(holder: busstop_list_ViewHolder, position: Int) {
         Timber.d("onBindViewHolder")
         val currentMaster1 = busstoplist[position]
-        val currentMaster2 = busPos[position]
-        holder.bind(currentMaster1,currentMaster2)
+        val currentMaster2 = stSeq
+        val currentMaster3 = stopFlag
+        holder.bind(currentMaster1,currentMaster2,currentMaster3)
     }
 
 }

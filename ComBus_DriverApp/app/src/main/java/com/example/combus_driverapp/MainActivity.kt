@@ -14,8 +14,8 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private val user = MyApplication.user
-    private val editor = user.edit()
+    //private val user = MyApplication.user
+    //private val editor = user.edit()
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -34,28 +34,27 @@ class MainActivity : AppCompatActivity() {
                         val response = response.body()
                         if (response != null){
                             if (response.status == "OK"){
-                                val sessionId = response.data.sessionId
-                                editor.putString("id",id)
-                                editor.putString("sessionid",sessionId)
-                                editor.apply()
+                                //editor.putString("id",id)
+                                //editor.putString("cookie",cookie)
+                                //editor.apply()
                                 val intent = Intent(this@MainActivity,Driver_Home::class.java)
                                 intent.putExtra("driverId",response.data.driverId)
                                 startActivity(intent)
+                                Log.d("status",response.status)
+                                Log.d("detail",response.detail)
+                                Log.d("data",response.data.driverId.toString())
+                                Log.d("data",response.data.driverName)
                             }else{
                                 Toast.makeText(this@MainActivity,response.detail,Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
                 }
-
                 override fun onFailure(call: Call<RetrofitClient.responselogin>, t: Throwable) {
                     val errorMessage = "Call Failed: ${t.message}"
                     Log.d("Retrofit", errorMessage)
                 }
             })
-
-            val showintent = Intent(this,Driver_Home::class.java)
-            startActivity(showintent)
         }
 
     }

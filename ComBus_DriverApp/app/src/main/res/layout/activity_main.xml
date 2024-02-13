@@ -48,8 +48,9 @@
             android:inputType="number"
             android:textSize="15sp"
             android:textColor="@color/busspot_gray"
+            android:textColorHint="@color/busspot_gray"
             android:backgroundTint="@color/back"
-            android:text="발급 받은 회원 번호를 입력해주세요" />
+            android:hint="발급 받은 회원 번호를 입력해주세요" />
 
         <Button
             android:id="@+id/btn_login"

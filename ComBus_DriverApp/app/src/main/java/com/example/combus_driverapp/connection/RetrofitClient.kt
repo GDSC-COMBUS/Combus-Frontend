@@ -20,15 +20,14 @@ class RetrofitClient {
         val data:logindata
     )
     data class logindata(
-        @SerializedName("sessionId")
-        val sessionId:String,
         @SerializedName("driverId")
         val driverId:Long,
         @SerializedName("driverName")
         val driverName:String,
         @SerializedName("loginId")
-        val loginIn:String
+        val loginId:String
     )
+
     data class responsehome(
         @SerializedName("timestamp")
         val timestamp:String,
@@ -50,10 +49,10 @@ class RetrofitClient {
         val totalReserved:Int,
         @SerializedName("totalDrop")
         val totalDrop:Int,
-        @SerializedName("busPos")
-        val busPos:homebusPos,
+        @SerializedName("busPosDto")
+        val busPosDto:homebusPos,
         @SerializedName("busStopList")
-        val busStopList:homebusStopList
+        val busStopList:List<RetrofitClient.homebusStopList>
     )
     data class homebusPos(
         @SerializedName("arsId")
@@ -95,13 +94,13 @@ class RetrofitClient {
     )
     data class busstopDetaildata(
         @SerializedName("boardingInfo")
-        val boardingInfo:detailInfolist,
+        val boardingInfo:List<detailInfolist>,
         @SerializedName("boardingBlindCnt")
         val boardingBlindCnt:Int,
         @SerializedName("boardingWheelchairCnt")
         val boardingWheelchairCnt:Int,
         @SerializedName("dropInfo")
-        val dropInfo:detailInfolist,
+        val dropInfo:List<detailInfolist>,
         @SerializedName("dropBlindCnt")
         val dropBlindCnt:Int,
         @SerializedName("dropWheelchairCnt")
