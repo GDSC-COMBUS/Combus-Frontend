@@ -3,17 +3,18 @@ package com.example.combus_driverapp
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.combus_driverapp.connection.RetrofitClient
 import com.example.combus_driverapp.databinding.DetailListItemBinding
 import timber.log.Timber
 
-class busstop_detail_alight_adapter(private val alightlist:List<alight>):RecyclerView.Adapter<busstop_detail_alight_adapter.detail_alight_ViewHolder>() {
+class busstop_detail_alight_adapter(private val alightlist: List<RetrofitClient.detailInfolist>):RecyclerView.Adapter<busstop_detail_alight_adapter.detail_alight_ViewHolder>() {
 
     class detail_alight_ViewHolder(val binding: DetailListItemBinding):
             RecyclerView.ViewHolder(binding.root){
-                fun bind(alight:alight){
+                fun bind(alight:RetrofitClient.detailInfolist){
                     binding.txtType.text = alight.type
-                    binding.txtIn.text = alight.board
-                    binding.txtOut.text = alight.alight
+                    binding.txtIn.text = alight.boardingStop
+                    binding.txtOut.text = alight.dropStop
                 }
             }
 

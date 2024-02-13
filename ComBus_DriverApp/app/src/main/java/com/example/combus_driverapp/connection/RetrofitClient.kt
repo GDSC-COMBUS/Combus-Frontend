@@ -20,19 +20,14 @@ class RetrofitClient {
         val data:logindata
     )
     data class logindata(
-        @SerializedName("sessionId")
-        val sessionId:String,
         @SerializedName("driverId")
         val driverId:Long,
         @SerializedName("driverName")
         val driverName:String,
         @SerializedName("loginId")
-        val loginIn:String
+        val loginId:String
     )
-    data class requesthome(
-        @SerializedName("driverId")
-        val driverId:Long
-    )
+
     data class responsehome(
         @SerializedName("timestamp")
         val timestamp:String,
@@ -54,10 +49,10 @@ class RetrofitClient {
         val totalReserved:Int,
         @SerializedName("totalDrop")
         val totalDrop:Int,
-        @SerializedName("busPos")
-        val busPos:homebusPos,
+        @SerializedName("busPosDto")
+        val busPosDto:homebusPos,
         @SerializedName("busStopList")
-        val busStopList:homebusStopList
+        val busStopList:List<RetrofitClient.homebusStopList>
     )
     data class homebusPos(
         @SerializedName("arsId")
@@ -85,4 +80,39 @@ class RetrofitClient {
         @SerializedName("wheelchair")
         val wheelchair:Boolean
     )
+    data class responsebusstopDetail(
+        @SerializedName("timestamp")
+        val timestamp:String,
+        @SerializedName("code")
+        val code:String,
+        @SerializedName("status")
+        val status:String,
+        @SerializedName("detail")
+        val detail:String,
+        @SerializedName("data")
+        val data:busstopDetaildata
+    )
+    data class busstopDetaildata(
+        @SerializedName("boardingInfo")
+        val boardingInfo:List<detailInfolist>,
+        @SerializedName("boardingBlindCnt")
+        val boardingBlindCnt:Int,
+        @SerializedName("boardingWheelchairCnt")
+        val boardingWheelchairCnt:Int,
+        @SerializedName("dropInfo")
+        val dropInfo:List<detailInfolist>,
+        @SerializedName("dropBlindCnt")
+        val dropBlindCnt:Int,
+        @SerializedName("dropWheelchairCnt")
+        val dropWheelchairCnt:Int
+    )
+    data class detailInfolist(
+        @SerializedName("type")
+        val type:String,
+        @SerializedName("boardingStop")
+        val boardingStop:String,
+        @SerializedName("dropStop")
+        val dropStop:String
+    )
+
 }
