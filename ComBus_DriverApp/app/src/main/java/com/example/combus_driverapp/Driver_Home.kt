@@ -1,10 +1,14 @@
 package com.example.combus_driverapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.combus_driverapp.connection.RetrofitClient
@@ -25,7 +29,7 @@ class Driver_Home : AppCompatActivity() {
     private lateinit var adapter: busstop_list_adapter // 어댑터 추가
     private var arsId:Long = 0
     private var stSeq:Int = 0
-    private var stopFlag = false
+    private var stopFlag:Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +68,8 @@ class Driver_Home : AppCompatActivity() {
                                 if (response.status == "OK"){
                                     val busstopdata = response.data.busStopList
                                     //val busPosdata = listOf(response.data.busPos)
-                                    arsId = response.data.busPosDto.arsId
-                                    stSeq = response.data.busPosDto.stSeq
+                                    arsId = response.data.busPosDto.arsId?: 0L
+                                    stSeq = response.data.busPosDto.stSeq?.toInt() ?: 0
                                     stopFlag = response.data.busPosDto.stopFlag
                                     Log.d("data",busstopdata.toString())
                                     Log.d("data",arsId.toString())
@@ -80,17 +84,56 @@ class Driver_Home : AppCompatActivity() {
 
                                     val layoutManager = LinearLayoutManager(this@Driver_Home)
                                     binding.bussropRecycle.layoutManager = layoutManager
-                                    val centerOfScreen: Int = binding.bussropRecycle.height / 2
-                                    val stSeqInt = response.data.busPosDto?.stSeq
-                                    if (stSeqInt != null) {
-                                        layoutManager.scrollToPositionWithOffset(stSeqInt, centerOfScreen)
-                                    } else {
-                                        Log.e("NullPointerException", "busPos is null or stSeq is null")
+                                    var stSeqInt = response.data.busPosDto?.stSeq
+                                    var centerOfScreen: Int = binding.bussropRecycle.height / 2
+
+                                    if (response.data.busPosDto?.stSeq!! < 3){
+                                        centerOfScreen = binding.bussropRecycle.height / 4
+                                        if (stSeqInt != null) {
+                                            layoutManager.scrollToPositionWithOffset(stSeqInt, centerOfScreen)
+                                        } else {
+                                            Log.e("NullPointerException", "busPos is null or stSeq is null")
+                                        }
                                     }
+                                    else if (response.data.busPosDto?.stSeq!! > response.data.busStopList.size - 6){
+                                        stSeqInt = response.data.busStopList.size
+                                        centerOfScreen = binding.bussropRecycle.height
+                                        if (stSeqInt != null) {
+                                            layoutManager.scrollToPositionWithOffset(stSeqInt, centerOfScreen)
+                                        } else {
+                                            Log.e("NullPointerException", "busPos is null or stSeq is null")
+                                        }
+                                    }
+                                    else{
+                                        if (stSeqInt != null) {
+                                            layoutManager.scrollToPositionWithOffset(stSeqInt, centerOfScreen)
+                                        } else {
+                                            Log.e("NullPointerException", "busPos is null or stSeq is null")
+                                        }
+                                    }
+
+
+
+
                                     /*layoutManager.scrollToPositionWithOffset(
                                         response.data.busPos.stSeq,
                                         centerOfScreen
                                     )*/
+                                    var type = ""
+                                    if ((busstopdata[response.data.busPosDto.stSeq].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq.toInt()].drop_cnt != 0)){
+                                        if (busstopdata[response.data.busPosDto.stSeq].wheelchair == true){
+                                            if (busstopdata[response.data.busPosDto.stSeq].blind == true){
+                                                type = "시각장애인 | 휠체어"
+                                            }
+                                            else type = "휠체어"
+                                        }
+                                        else{
+                                            if (busstopdata[response.data.busPosDto.stSeq].blind == true){
+                                                type = "시각장애인"
+                                            }
+                                        }
+                                        dialog(busstopdata[response.data.busPosDto.stSeq.toInt()].reserved_cnt,busstopdata[response.data.busPosDto.stSeq.toInt()].drop_cnt,type)
+                                    }
                                 }else{
                                     Toast.makeText(this@Driver_Home,response.detail, Toast.LENGTH_SHORT).show()
                                 }
@@ -116,5 +159,20 @@ class Driver_Home : AppCompatActivity() {
         super.onDestroy()
         // 액티비티가 종료될 때 핸들러 작업을 제거하여 메모리 누수를 방지합니다.
         handler.removeCallbacksAndMessages(null)
+    }
+    @SuppressLint("MissingInflatedId")
+    fun dialog(boarding:Int, out:Int, type:String){
+        val mDialogView = LayoutInflater.from(this).inflate(R.layout.popup,null)
+        val mBuilder = AlertDialog.Builder(this)
+            .setView(mDialogView)
+        val boarding_num = mDialogView.findViewById<TextView>(R.id.textView7)
+        val out_num = mDialogView.findViewById<TextView>(R.id.textView9)
+        val type_txt = mDialogView.findViewById<TextView>(R.id.next_type_txt)
+
+        boarding_num.text = boarding.toString()
+        out_num.text = out.toString()
+        type_txt.text = type
+
+        mBuilder.show()
     }
 }

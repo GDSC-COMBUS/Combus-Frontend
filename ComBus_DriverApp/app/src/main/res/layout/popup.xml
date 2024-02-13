@@ -47,7 +47,7 @@
                 android:id="@+id/textView5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="예약\n예약 유형"
+                android:text="예약"
                 android:textColor="@color/busspot_gray"
                 android:textSize="18sp"
                 android:fontFamily="@font/aldrich"
@@ -58,7 +58,17 @@
                 android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="하차\n하차유형"
+                android:text="하차"
+                android:textColor="@color/busspot_gray"
+                android:textSize="18sp"
+                android:fontFamily="@font/aldrich"
+                android:layout_marginBottom="20dp"
+                />
+            <TextView
+                android:id="@+id/next_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="유형"
                 android:textColor="@color/busspot_gray"
                 android:textSize="18sp"
                 android:fontFamily="@font/aldrich"
@@ -87,17 +97,9 @@
                 android:text="3명"
                 android:textSize="18sp"
                 android:textColor="@color/black"
-                android:fontFamily="@font/aldrich"/>
-
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="시각장애인 | 휠체어"
-                android:textSize="18sp"
-                android:textColor="@color/black"
                 android:fontFamily="@font/aldrich"
                 android:layout_marginBottom="20dp"/>
+
 
             <TextView
                 android:id="@+id/textView9"
@@ -106,16 +108,19 @@
                 android:text="1명"
                 android:textSize="18sp"
                 android:textColor="@color/black"
-                android:fontFamily="@font/aldrich"/>
+                android:fontFamily="@font/aldrich"
+                android:layout_marginBottom="20dp"/>
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/next_type_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="휠체어"
+                android:text="시각장애인 | 휠체어"
                 android:textSize="18sp"
                 android:textColor="@color/black"
-                android:fontFamily="@font/aldrich"/>
+                android:fontFamily="@font/aldrich"
+                />
+
         </LinearLayout>
     </LinearLayout>
 

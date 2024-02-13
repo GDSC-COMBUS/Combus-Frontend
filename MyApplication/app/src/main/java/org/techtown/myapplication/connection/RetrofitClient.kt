@@ -3,10 +3,6 @@ package org.techtown.myapplication.connection
 import com.google.gson.annotations.SerializedName
 
 class RetrofitClient {
-    data class requestBusSelection(
-        @SerializedName("strSrch")
-        val strSrch:String
-    )
     abstract class responseBusSelection(
         @SerializedName("vehId")
         val vehId:String,

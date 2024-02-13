@@ -229,7 +229,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun updateUIWithNearbyBusStops(busStops: List<BoardingStop>) {
-        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer)
+        val resultContainer = findViewById<LinearLayout>(R.id.resultContainer_boarding)
         resultContainer.removeAllViews()
 
         busStops.forEach { busStop ->

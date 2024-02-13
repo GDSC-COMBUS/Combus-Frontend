@@ -78,7 +78,9 @@ class RetrofitClient {
         @SerializedName("drop_cnt")
         val drop_cnt:Int,
         @SerializedName("wheelchair")
-        val wheelchair:Boolean
+        val wheelchair:Boolean,
+        @SerializedName("blind")
+        val blind:Boolean
     )
     data class responsebusstopDetail(
         @SerializedName("timestamp")
