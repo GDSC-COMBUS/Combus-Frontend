@@ -46,7 +46,7 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
 
         val strSrch = binding.searchBox2.text.toString()
 
-        val call = RetrofitObject.getRetrofitService.BusSelection(RetrofitClient.requestBusSelection(strSrch))
+        val call = RetrofitObject.getRetrofitService.BusSelection(strSrch)
 
         call.enqueue(object : retrofit2.Callback<RetrofitClient.responseBusSelection> {
             override fun onResponse(
