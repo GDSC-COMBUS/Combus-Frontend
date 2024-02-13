@@ -44,31 +44,31 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this@BusSelection)
 
-        val strSrch = binding.searchBox2.text.toString()
+        val arsId = binding.searchBox2.text.toString()
 
-        val call = RetrofitObject.getRetrofitService.BusSelection(strSrch)
+        val call = RetrofitObject.getRetrofitService.BusSelection(arsId)
 
-        call.enqueue(object : retrofit2.Callback<RetrofitClient.responseBusSelection> {
+        call.enqueue(object : retrofit2.Callback<List<RetrofitClient.ResponseBusSelection>> {
             override fun onResponse(
-                call: Call<RetrofitClient.responseBusSelection>,
-                response: Response<RetrofitClient.responseBusSelection>
+                call: Call<List<RetrofitClient.ResponseBusSelection>>,
+                response: Response<List<RetrofitClient.ResponseBusSelection>>
             ) {
                 if (response.isSuccessful) {
+                    Log.d("status","connected11")
                     val busSelectionResponse = response.body()
-                    // 여기서 busSelectionResponse를 사용하여 RecyclerView에 데이터를 추가할 수 있습니다.
-                    // 예를 들어, busSelectionResponse에서 필요한 정보를 추출하여 adapter에 추가합니다.
-                    // busListAdapter.addData(busSelectionResponse) 등의 방법을 사용할 수 있습니다.
-                    val dataList1: RetrofitClient.responseBusSelection? = busSelectionResponse
+                    val dataList1: List<RetrofitClient.ResponseBusSelection>? = busSelectionResponse
                     binding.busList.adapter = BusSelection_adapter(dataList1)
                     initializeViews()
-
                 } else {
                     // 오류 처리
+                    Log.d("Retrofit", "false")
                 }
             }
 
-            override fun onFailure(call: Call<RetrofitClient.responseBusSelection>, t: Throwable) {
+            override fun onFailure(call: Call<List<RetrofitClient.ResponseBusSelection>>, t: Throwable) {
                 // 네트워크 오류 처리
+                val errorMessage = "Call Failed: ${t.message} "
+                Log.d("Retrofit", errorMessage)
             }
         })
     }
@@ -90,6 +90,7 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
         return googleMap.addMarker(markerOption)
 
     }
+
     override fun onResume() {
         super.onResume()
         mapView.onResume()
@@ -114,15 +115,16 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
         super.onLowMemory()
         mapView.onLowMemory()
     }
+
     data class LatLngEntity(
         var latitude: Double?,
         var longitude: Double?
     )
 
     override fun onMapReady(p0: GoogleMap) {
-        this.googleMap = googleMap
+        this.googleMap = p0
 
-        currentMarker = setupMarker(LatLngEntity(busstop_X as Double?, busstop_Y as Double?))  // default 서울역
+        currentMarker = setupMarker(LatLngEntity(busstop_X, busstop_Y))  // default 서울역
         currentMarker?.showInfoWindow()
     }
 }
