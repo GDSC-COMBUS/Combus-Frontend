@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/backButton2"
+        android:id="@+id/backButton5"
         android:layout_width="43dp"
         android:layout_height="20dp"
         android:layout_marginStart="16dp"
@@ -51,7 +51,7 @@
         app:srcCompat="@drawable/bus_stop" />
 
     <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/map_drop_off"
         android:layout_width="342dp"
         android:layout_height="207dp"
         android:layout_marginTop="108dp"
@@ -62,13 +62,18 @@
 
     <EditText
         android:id="@+id/searchBox_drop_off"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="58dp"
+        android:background="@null"
+        android:gravity="left"
+        android:inputType="text"
         android:text="하차 정류장을 입력해주세요"
+        android:textColor="#827B7B"
+        android:textColorHint="#827B7B"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintHorizontal_bias="0.782"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -90,7 +95,7 @@
 
             <!-- 추가: CardView로 감싼 레이아웃 -->
             <LinearLayout
-                android:id="@+id/resultContainer"
+                android:id="@+id/resultContainer_drop_off"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

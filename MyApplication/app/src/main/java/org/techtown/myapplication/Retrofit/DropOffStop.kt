@@ -58,11 +58,19 @@ data class DropOffStop(
 interface DropOffStopService {
     @Headers("Content-Type: application/json")
     @GET("/reservation/endst")
-    fun getDropOffBusStops(@Body locationRequest: LocationRequest): Call<List<DropOffStop>>
+    fun getDropOffBusStops(
+        @Query("ardId") arsId: String?,
+        @Query("busRouteId") busRouteId: String?
+    ): Call<List<DropOffStop>>
 }
 
+data class ReservationRequest(
+    val arsId: String,
+    val busRouteId: String
+)
+
 object ApiManager_DropOffBusStop {
-    private const val BASE_URL = "https://your-api-base-url.com/"
+    private const val BASE_URL = "http://34.64.189.150:8090/"
 
     fun create(): DropOffStopService {
         val retrofit = Retrofit.Builder()

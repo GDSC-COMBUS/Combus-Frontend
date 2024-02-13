@@ -2,6 +2,7 @@ package org.techtown.myapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -20,15 +21,22 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var mapView: MapView
     private var currentMarker: Marker? = null
+    private var busstop_name: String = ""
+    private var arsId: String = ""
+    private var busstop_X: Double = 0.0
+    private var busstop_Y: Double = 0.0
 
-    val extras = intent.extras
-    val busstop_name = extras!!["busStop_name"].toString()
-    val busstop_X = extras!!["gpsX"]
-    val busstop_Y = extras!!["gpsY"]
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("wow", "BusSelection onCreate called")
         binding = ActivityBusSelectionBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        val extras = intent.extras
+        busstop_name = extras?.getString("busStop_name") ?: ""
+        arsId = extras?.getString("arsId") ?: ""
+        busstop_X = extras?.getDouble("gpsX") ?: 0.0
+        busstop_Y = extras?.getDouble("gpsY") ?: 0.0
 
         binding.textView5.text = busstop_name
 

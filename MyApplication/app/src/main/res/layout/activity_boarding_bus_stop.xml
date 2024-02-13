@@ -51,7 +51,7 @@
         app:srcCompat="@drawable/bus_stop" />
 
     <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/map_boarding"
         android:layout_width="342dp"
         android:layout_height="207dp"
         android:layout_marginTop="108dp"
@@ -78,7 +78,7 @@
 
             <!-- 추가: CardView로 감싼 레이아웃 -->
             <LinearLayout
-                android:id="@+id/resultContainer"
+                android:id="@+id/resultContainer_boarding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -87,15 +87,20 @@
         </ScrollView>
     </LinearLayout>
 
-    <TextView
+    <EditText
         android:id="@+id/searchBox_boarding"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="58dp"
+        android:background="@null"
+        android:gravity="left"
+        android:inputType="text"
         android:text="승차 정류장을 입력해주세요"
+        android:textColor="#827B7B"
+        android:textColorHint="#827B7B"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.619"
+        app:layout_constraintHorizontal_bias="0.782"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

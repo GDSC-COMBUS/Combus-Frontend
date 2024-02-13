@@ -26,10 +26,10 @@ class Reserved : AppCompatActivity() {
         reservationData = intent.getParcelableExtra("reservationData")
 
         if (reservationData != null) {
-            binding.createdAt.text = reservationData?.createdAt
+            binding.createdAt.text = reservationData?.date
             binding.boardingStop.text = reservationData?.boardingStop
-            binding.busId.text = reservationData?.busId.toString()
-            binding.dropStop.text = reservationData?.dropStop.toString()
+            binding.busId.text = reservationData?.busRouteName
+            binding.dropStop.text = reservationData?.dropStop
             binding.status.text = reservationData?.status
         }
 
