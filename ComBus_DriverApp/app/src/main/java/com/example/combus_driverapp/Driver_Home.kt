@@ -97,7 +97,7 @@ class Driver_Home : AppCompatActivity() {
                                     }
                                     else if (response.data.busPosDto?.stSeq!! > response.data.busStopList.size - 6){
                                         stSeqInt = response.data.busStopList.size
-                                        centerOfScreen = binding.bussropRecycle.height
+                                        centerOfScreen = binding.pullScrean.height - (binding.bussropRecycle.height/7)
                                         if (stSeqInt != null) {
                                             layoutManager.scrollToPositionWithOffset(stSeqInt, centerOfScreen)
                                         } else {
@@ -120,19 +120,19 @@ class Driver_Home : AppCompatActivity() {
                                         centerOfScreen
                                     )*/
                                     var type = ""
-                                    if ((busstopdata[response.data.busPosDto.stSeq].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq.toInt()].drop_cnt != 0)){
-                                        if (busstopdata[response.data.busPosDto.stSeq].wheelchair == true){
-                                            if (busstopdata[response.data.busPosDto.stSeq].blind == true){
+                                    if ((busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq-1].drop_cnt != 0)){
+                                        if (busstopdata[response.data.busPosDto.stSeq-1].wheelchair == true){
+                                            if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
                                                 type = "시각장애인 | 휠체어"
                                             }
                                             else type = "휠체어"
                                         }
                                         else{
-                                            if (busstopdata[response.data.busPosDto.stSeq].blind == true){
+                                            if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
                                                 type = "시각장애인"
                                             }
                                         }
-                                        dialog(busstopdata[response.data.busPosDto.stSeq.toInt()].reserved_cnt,busstopdata[response.data.busPosDto.stSeq.toInt()].drop_cnt,type)
+                                        dialog(busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt,busstopdata[response.data.busPosDto.stSeq-1].drop_cnt,type)
                                     }
                                 }else{
                                     Toast.makeText(this@Driver_Home,response.detail, Toast.LENGTH_SHORT).show()
