@@ -1,11 +1,10 @@
 package org.techtown.myapplication.connection
 
 import retrofit2.Call
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RetrofitAPI {
-    @GET("/reservation/bus/{strSrch}")
-    fun BusSelection(@Path ("strSrch") strSrch:String): Call<RetrofitClient.responseBusSelection>
+    @GET("/reservation/bus")
+    fun BusSelection(@Query("arsId") arsId : String): Call<List<RetrofitClient.ResponseBusSelection>>
 }

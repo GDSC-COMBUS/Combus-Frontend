@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import org.techtown.myapplication.connection.RetrofitClient
 import org.techtown.myapplication.databinding.BusSelectionItemBinding
 
-class BusSelection_adapter(private val buslist: RetrofitClient.responseBusSelection?):RecyclerView.Adapter<BusSelection_adapter.BusSelection_viewholder>() {
+class BusSelection_adapter(private val buslist: List<RetrofitClient.ResponseBusSelection>?): RecyclerView.Adapter<BusSelection_adapter.BusSelection_viewholder>() {
     class BusSelection_viewholder(private val binding: BusSelectionItemBinding):
             RecyclerView.ViewHolder(binding.root){
                 private val context = binding.root.context
-        fun bind(bus:RetrofitClient.responseBusSelection){
+        fun bind(bus:RetrofitClient.ResponseBusSelection){
             val busnum = bus.busRouteAbrv
             val bustype = bus.low
             binding.menuValue.text = busnum
