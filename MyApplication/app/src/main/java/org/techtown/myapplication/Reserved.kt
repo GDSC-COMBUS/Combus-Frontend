@@ -1,5 +1,6 @@
 package org.techtown.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
@@ -55,6 +56,12 @@ class Reserved : AppCompatActivity() {
                 }
                 binding.buttonStatus.isEnabled = false
             }
+        }
+        Toast.makeText(this, reservationData!!.busRouteName.toString(),Toast.LENGTH_SHORT).show()
+        binding.buttonCamera.setOnClickListener {
+            val intent = Intent(this,Camera_page::class.java)
+            intent.putExtra("bus_num", reservationData?.busRouteName.toString())
+            startActivity(intent)
         }
     }
 
