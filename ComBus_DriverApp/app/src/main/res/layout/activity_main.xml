@@ -50,7 +50,7 @@
             android:textColor="@color/busspot_gray"
             android:textColorHint="@color/busspot_gray"
             android:backgroundTint="@color/back"
-            android:hint="발급 받은 회원 번호를 입력해주세요" />
+            android:hint="Please enter your membership number." />
 
         <Button
             android:id="@+id/btn_login"
@@ -59,7 +59,7 @@
             android:layout_weight="1"
             android:textColor="@color/black"
             android:backgroundTint="@color/login_back"
-            android:text="로그인" />
+            android:text="Login" />
     </LinearLayout>
 
 </LinearLayout>

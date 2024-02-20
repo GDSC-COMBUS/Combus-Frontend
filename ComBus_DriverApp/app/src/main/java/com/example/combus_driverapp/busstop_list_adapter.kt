@@ -32,13 +32,13 @@ class busstop_list_adapter(private var busstoplist: List<RetrofitClient.homebusS
 
                     if (busstop.reserved_cnt>0) {
                         binding.txtBusstopBookNumItem.visibility = View.VISIBLE
-                        binding.txtBusstopBookNumItem.text = "예약 ${busstop.reserved_cnt}"
+                        binding.txtBusstopBookNumItem.text = "Reservation ${busstop.reserved_cnt}"
                     }
                     else binding.txtBusstopBookNumItem.visibility = View.GONE
 
                     if (busstop.drop_cnt>0) {
                         binding.txtBusstopOutNumItem.visibility = View.VISIBLE
-                        binding.txtBusstopOutNumItem.text = "하차 ${busstop.drop_cnt}"
+                        binding.txtBusstopOutNumItem.text = "Dropping off ${busstop.drop_cnt}"
                     }
                     else binding.txtBusstopOutNumItem.visibility = View.GONE
 

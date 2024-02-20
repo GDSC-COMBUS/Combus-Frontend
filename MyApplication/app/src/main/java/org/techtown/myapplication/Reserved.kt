@@ -72,6 +72,12 @@ class Reserved : AppCompatActivity() {
                 }
             }
         }
+        Toast.makeText(this, reservationData!!.busRouteName.toString(),Toast.LENGTH_SHORT).show()
+        binding.buttonCamera.setOnClickListener {
+            val intent = Intent(this,Camera_page::class.java)
+            intent.putExtra("bus_num", reservationData?.busRouteName.toString())
+            startActivity(intent)
+        }
     }
 
     // 확인 대화 상자를 표시하는 함수

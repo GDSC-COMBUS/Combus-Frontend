@@ -36,8 +36,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bus_type_radius"
-        android:padding="6dp"
-        android:text="Low Bus"
+        android:text="Low Floor Bus"
+
         android:textColor="#0074FF"
         android:textStyle="bold" />
 
