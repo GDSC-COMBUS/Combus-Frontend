@@ -42,6 +42,7 @@ import org.techtown.myapplication.databinding.ActivityCameraPageBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -58,7 +59,7 @@ class Camera_page : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private val PICK_VIDEO_REQUEST = 1
 
-    var bus_num = ""
+    var bus_num:String = ""
     var videoUri: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityCameraPageBinding.inflate(layoutInflater)
@@ -67,6 +68,7 @@ class Camera_page : AppCompatActivity() {
 
         val extras = intent.extras
         bus_num = extras!!.getString("bus_num").toString()
+        //bus_num = "303"
 
         binding.busNumTxt.visibility = View.GONE
 
@@ -81,6 +83,7 @@ class Camera_page : AppCompatActivity() {
         binding.videoCaptureButton.setOnClickListener {
             binding.busNumTxt.visibility = View.GONE
             captureVideo()
+            //openAlbum()
             }
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -89,6 +92,68 @@ class Camera_page : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_VIDEO_REQUEST)
 
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PICK_VIDEO_REQUEST) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                val videoUri = data.data // 선택된 동영상의 URI를 가져옵니다.
+                val videoPath = videoUri?.path // 선택된 동영상의 파일 경로를 가져옵니다.
+
+                if (videoPath != null) {
+                    // 동영상 경로를 사용하여 추가 작업을 수행할 수 있습니다.
+                    // 여기서는 예를 들어 동영상 경로를 토스트 메시지로 표시합니다.
+                    Toast.makeText(this, "Selected Video: $videoPath", Toast.LENGTH_SHORT).show()
+                    val file = File(videoPath)
+                    val mediaType = "video/mp4".toMediaType()
+                    val body1 = file.toString().toRequestBody(mediaType)
+                    //val requestFile = RequestBody.create(MediaType.parse("video/mp4"), file)
+                    val body = MultipartBody.Part.createFormData("videoFile", file.name, body1)
+
+                    val call = RetrofitObject.getRetrofitService.BusnumCamera(body,bus_num)
+
+                    call.enqueue(object : Callback<RetrofitClient.ResponseCamera> {
+                        override fun onResponse(
+                            call: Call<RetrofitClient.ResponseCamera>,
+                            response: Response<RetrofitClient.ResponseCamera>
+                        ) {
+                            if (response.isSuccessful){
+                                val response = response.body()
+                                if (response != null){
+                                    if (response.status == "OK"){
+                                        Log.e("Retrofit", response.status)
+                                        Log.e("Retrofit",response.data.correct.toString())
+                                        Toast.makeText(this@Camera_page,response.data.correct.toString(),Toast.LENGTH_SHORT).show()
+                                        if (response.data.correct == true){
+                                            binding.busNumTxt.visibility = View.VISIBLE
+                                            binding.busNumTxt.text = "${bus_num}번 버스입니다."
+                                        }
+                                        else if(response.data.correct == false){
+                                            binding.busNumTxt.visibility = View.VISIBLE
+                                            binding.busNumTxt.text = "${bus_num}번 버스가 아닙니다."
+                                        }
+                                    }else{
+                                    }
+                                }
+                            }
+                            else{
+                                Log.e("Retrofit", "fail")
+                                Toast.makeText(this@Camera_page,"fail",Toast.LENGTH_SHORT).show()}
+                        }
+                        override fun onFailure(call: Call<RetrofitClient.ResponseCamera>, t: Throwable) {
+                            val errorMessage = "Call Failed: ${t.message}"
+                            Log.e("Retrofit", errorMessage)
+                            Toast.makeText(this@Camera_page,errorMessage,Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                } else {
+                    Toast.makeText(this, "Failed to retrieve video path", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Video selection cancelled", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -242,6 +307,7 @@ class Camera_page : AppCompatActivity() {
             }
 
     }
+
     fun connect_camera(videoUri:Uri){
          // 선택된 동영상의 URI를 가져옵니다.
         val videoPath = videoUri?.path // 선택된 동영상의 파일 경로를 가져옵니다.
@@ -268,6 +334,7 @@ class Camera_page : AppCompatActivity() {
                         if (response != null){
                             if (response.status == "OK"){
                                 Log.e("Retrofit", response.status)
+                                Log.e("Retrofit",response.data.correct.toString())
                                 Toast.makeText(this@Camera_page,response.data.correct.toString(),Toast.LENGTH_SHORT).show()
                                 if (response.data.correct == true){
                                     binding.busNumTxt.visibility = View.VISIBLE
