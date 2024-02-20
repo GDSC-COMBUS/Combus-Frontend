@@ -19,13 +19,9 @@
         android:textSize="18sp" />
 
     <View
-
         android:layout_width="0dp"
-
         android:layout_height="0dp"
-
         android:layout_weight="1"
-
         />
 
     <TextView
@@ -36,8 +32,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bus_type_radius"
-        android:padding="6dp"
         android:text="Low Bus"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        android:layout_marginRight="5dp"
         android:textColor="#0074FF"
         android:textStyle="bold" />
 

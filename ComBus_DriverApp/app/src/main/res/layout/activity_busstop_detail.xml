@@ -100,7 +100,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/aldrich"
-                        android:text="예약정보"
+                        android:text="Reservation"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -140,7 +140,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/aldrich"
-                        android:text="하차 정보"
+                        android:text="Dropping off"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />

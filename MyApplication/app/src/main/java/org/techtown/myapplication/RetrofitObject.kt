@@ -12,8 +12,9 @@ object RetrofitObject {
     private val getRetrofit by lazy {
         val clientBuilder = OkHttpClient.Builder()
 
-        clientBuilder.readTimeout(30, TimeUnit.SECONDS)
-        clientBuilder.writeTimeout(30,TimeUnit.SECONDS)
+        clientBuilder.connectTimeout(120000, TimeUnit.MILLISECONDS)
+        clientBuilder.readTimeout(120, TimeUnit.SECONDS)
+        clientBuilder.writeTimeout(120,TimeUnit.SECONDS)
 
         val client = clientBuilder.build()
 

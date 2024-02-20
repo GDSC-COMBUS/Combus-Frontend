@@ -31,10 +31,10 @@ class busstop_detail : AppCompatActivity() {
         binding.txtBusstopNum.text = busstop_num.toString()
 
         binding.txtBusstopBookNum.visibility = View.VISIBLE
-        binding.txtBusstopBookNum.text = "예약 수 ${boarding_num}명"
+        binding.txtBusstopBookNum.text = "Reservaion ${boarding_num}"
 
         binding.txtBusstopOutNum.visibility = View.VISIBLE
-        binding.txtBusstopOutNum.text = "하차 수 ${drop_num}명"
+        binding.txtBusstopOutNum.text = "Dropping off ${drop_num}"
         /*if (boarding_num>0){
 
         }
@@ -60,39 +60,9 @@ class busstop_detail : AppCompatActivity() {
                         Log.d("data",detailboardingdata.toString())
                         Log.d("data",detaildropdata.toString())
 
-                        binding.txtBusstopBookInforNum.text = "시각장애인 ${responseData.data.boardingBlindCnt}명 | 휠체어 ${responseData.data.boardingWheelchairCnt}명"
-                        binding.txtBusstopOutInforNum.text = "시각장애인 ${responseData.data.dropBlindCnt}명 | 휠체어 ${responseData.data.dropWheelchairCnt}명"
+                        binding.txtBusstopBookInforNum.text = "Blind person ${responseData.data.boardingBlindCnt} | Wheelchair ${responseData.data.boardingWheelchairCnt}"
+                        binding.txtBusstopOutInforNum.text = "Blind person ${responseData.data.dropBlindCnt} | Wheelchair ${responseData.data.dropWheelchairCnt}"
 
-                        /*if (responseData.data.boardingBlindCnt>0){
-                            binding.txtBusstopBookInforNum.visibility = View.VISIBLE
-                            if (responseData.data.boardingWheelchairCnt>0){
-                                binding.txtBusstopBookInforNum.text = "시각장애인 ${responseData.data.boardingBlindCnt}명 | 휠체어 ${responseData.data.boardingWheelchairCnt}명"
-                            }
-                            else binding.txtBusstopBookInforNum.text = "시각장애인 ${responseData.data.boardingBlindCnt}명"
-                        }
-                        else {
-                            if (responseData.data.boardingWheelchairCnt>0) {
-                                binding.txtBusstopBookInforNum.visibility = View.VISIBLE
-                                binding.txtBusstopBookInforNum.text = "휠체어 ${responseData.data.boardingWheelchairCnt}명"
-                            }
-                            else binding.txtBusstopBookInforNum.visibility = View.GONE
-                        }
-
-                        if (responseData.data.dropBlindCnt>0){
-                            binding.txtBusstopOutInforNum.visibility = View.VISIBLE
-                            if (responseData.data.dropWheelchairCnt>0){
-                                binding.txtBusstopOutInforNum.text = "시각장애인 ${responseData.data.dropBlindCnt}명 | 휠체어 ${responseData.data.dropWheelchairCnt}명"
-                            }
-                            else binding.txtBusstopOutInforNum.text = "시각장애인 ${responseData.data.dropBlindCnt}명"
-                        }
-                        else {
-                            if (responseData.data.dropWheelchairCnt>0) {
-                                binding.txtBusstopOutInforNum.visibility = View.VISIBLE
-                                binding.txtBusstopOutInforNum.text = "휠체어 ${responseData.data.dropWheelchairCnt}명"
-                            }
-                            else binding.txtBusstopOutInforNum.visibility = View.GONE
-                        }*/
-                        //
                         binding.busstopBookRecycle.adapter = busstop_detail_book_adapter(detailboardingdata)
                         binding.busstopOutRecycle.adapter = busstop_detail_alight_adapter(detaildropdata)
 

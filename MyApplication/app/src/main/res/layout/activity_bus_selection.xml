@@ -23,10 +23,10 @@
             android:layout_width="126dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:text="Boarding\nStop"
             android:gravity="center"
-            android:text="BoardingStop"
-            android:textSize="19dp"
-            android:textStyle="normal" />
+            android:textSize="20dp" />
+
 
         <TextView
             android:id="@+id/textView5"
@@ -67,7 +67,6 @@
             android:layout_marginLeft="5dp"
             android:background="@android:color/transparent"
             android:backgroundTint="#EFEFEF"
-            android:ems="10"
             android:hint="Please enter the bus number"
             android:inputType="text"
             android:textColor="#827B7B"
