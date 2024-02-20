@@ -27,33 +27,33 @@
 
     <Button
         android:id="@+id/button_status2"
-        android:layout_width="157dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="52dp"
-        android:layout_marginEnd="36dp"
+        android:layout_width="130dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="52dp"
         android:layout_weight="0"
         android:background="@drawable/radius"
-        android:backgroundTint="#6E99F6"
+        android:backgroundTint="#926E99F6"
         android:backgroundTintMode="src_over"
-        android:text="Dropping off Completed"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:text="Dropping off Confirm"
+        android:textColor="#000000"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
     <Button
         android:id="@+id/button_status"
-        android:layout_width="157dp"
-        android:layout_height="66dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="52dp"
+        android:layout_width="130dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="48dp"
         android:layout_weight="0"
         android:background="@drawable/radius"
-        android:backgroundTint="#6E99F6"
+        android:backgroundTint="#926E99F6"
         android:backgroundTintMode="src_over"
-        android:text="Riding completed"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:text="Boarding Confirm"
+        android:textColor="#000000"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
@@ -236,7 +236,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="0"
-            android:text="  Riding or not"
+            android:text="  Status"
             android:textSize="20sp" />
 
         <TextView
