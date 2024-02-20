@@ -1,6 +1,8 @@
 package org.techtown.myapplication
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -30,30 +32,44 @@ class Reserved : AppCompatActivity() {
             binding.boardingStop.text = reservationData?.boardingStop
             binding.busId.text = reservationData?.busRouteName
             binding.dropStop.text = reservationData?.dropStop
-            binding.status.text = reservationData?.status
+            if ( reservationData?.status == "승차 전: 버스 오는 중")
+                binding.status.text = "Before boarding: Bus on the way"
+            if (reservationData?.status == "탑승 완료: 목적지로 가는 중") {
+                binding.buttonStatus.backgroundTintList = getColorStateList(R.color.clickedTextColor)
+                binding.buttonStatus.isEnabled = false
+                binding.status.text = "Boarding complete: en route to destination"
+            }
         }
 
         // "승차 완료" 버튼 클릭 시
         binding.buttonStatus.setOnClickListener {
-            showConfirmationDialog("승차 완료하셨습니까?") {
+            showConfirmationDialog("Are you done getting on?") {
                 // 사용자가 확인을 누른 경우에만 아래 코드 실행
-                binding.buttonStatus.setTextColor(resources.getColor(R.color.clickedTextColor))
                 updateStatusOnServer(reservationData?.id, "승차 완료") { response ->
                     handleApiResponse(response)
+                    if (response != null) {
+                        // 서버 응답을 받았을 때만 버튼을 비활성화하고 색상을 변경
+                        binding.buttonStatus.backgroundTintList = getColorStateList(R.color.clickedTextColor)
+                        binding.buttonStatus.isEnabled = false
+                    }
                 }
-                binding.buttonStatus.isEnabled = false
             }
         }
 
-        // "하차 완료" 버튼 클릭 시
+// "하차 완료" 버튼 클릭 시
         binding.buttonStatus2.setOnClickListener {
-            showConfirmationDialog("하차 완료하셨습니까?") {
+            showConfirmationDialog("Are you done getting off?") {
                 // 사용자가 확인을 누른 경우에만 아래 코드 실행
-                binding.buttonStatus.setTextColor(resources.getColor(R.color.clickedTextColor))
                 updateStatusOnServer(reservationData?.id, "하차 완료") { response ->
                     handleApiResponse(response)
+                    if (response != null) {
+                        // 서버 응답을 받았을 때만 버튼을 비활성화하고 색상을 변경
+                        binding.buttonStatus2.backgroundTintList = getColorStateList(R.color.clickedTextColor)
+                        binding.buttonStatus2.isEnabled = false
+                        val intent = Intent(this, NoReservation::class.java)
+                        startActivity(intent)
+                    }
                 }
-                binding.buttonStatus.isEnabled = false
             }
         }
     }
@@ -62,23 +78,34 @@ class Reserved : AppCompatActivity() {
     private fun showConfirmationDialog(message: String, onConfirmed: () -> Unit) {
         AlertDialog.Builder(this)
             .setMessage(message)
-            .setPositiveButton("예") { _, _ ->
+            .setPositiveButton("Yes") { _, _ ->
                 onConfirmed.invoke()
             }
-            .setNegativeButton("아니요", null)
+            .setNegativeButton("No", null)
             .show()
     }
 
     // 서버에 상태 업데이트 요청을 보내는 함수
     private fun updateStatusOnServer(reservationId: Long?, newStatus: String, callback: (HomeReservationResponse?) -> Unit) {
-        val call = ApiManager_homeReservation.updateReservationStatus(reservationId, newStatus)
+        val call = ApiManager_homeReservation.updateReservationStatus(reservationId)
 
         call.enqueue(object : Callback<HomeReservationResponse> {
             override fun onResponse(call: Call<HomeReservationResponse>, response: Response<HomeReservationResponse>) {
-                callback(response.body())
+                if (response.isSuccessful) {
+                    // 서버 응답이 성공한 경우
+                    callback(response.body())
+                } else {
+                    // 서버 응답이 실패한 경우
+                    Log.e("ddddddd", "Unsuccessful response: ${response.code()}")
+                    showToast("서버 응답 오류가 발생했습니다. (${response.code()})")
+                    callback(null)
+                }
             }
 
             override fun onFailure(call: Call<HomeReservationResponse>, t: Throwable) {
+                // 네트워크 오류 발생
+                Log.e("ddddddd", "Network error", t)
+                showToast("네트워크 오류가 발생했습니다.")
                 callback(null)
             }
         })
@@ -87,8 +114,8 @@ class Reserved : AppCompatActivity() {
     // 서버 응답을 처리하는 함수
     private fun handleApiResponse(response: HomeReservationResponse?) {
         if (response != null) {
-            showToast(response.detail)
             // 예약 상태 업데이트 및 토스트 메시지 처리 등 추가 작업 가능
+            binding.status.text = "Boarding complete: en route to destination"
         } else {
             showToast("네트워크 오류 또는 서버 응답 오류가 발생했습니다.")
         }

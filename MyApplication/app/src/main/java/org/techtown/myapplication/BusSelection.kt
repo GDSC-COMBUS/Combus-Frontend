@@ -1,8 +1,10 @@
 package org.techtown.myapplication
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -25,6 +27,7 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
     private var arsId: String = ""
     private var busstop_X: Double = 0.0
     private var busstop_Y: Double = 0.0
+    private var userId: Long = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("wow", "BusSelection onCreate called")
@@ -32,11 +35,19 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val backButton = findViewById<Button>(R.id.backButton_busSelection)
+        backButton.setOnClickListener {
+            val intent = Intent(this, BoardingBusStop::class.java)
+            startActivity(intent)
+        }
+
         val extras = intent.extras
         busstop_name = extras?.getString("busStop_name") ?: ""
         arsId = extras?.getString("arsId") ?: ""
         busstop_X = extras?.getDouble("gpsX") ?: 0.0
         busstop_Y = extras?.getDouble("gpsY") ?: 0.0
+        userId = intent.getLongExtra("userId", -1L)
+        Log.d("userIdCheck_busSelection", "$userId")
 
         binding.textView5.text = busstop_name
 
@@ -44,7 +55,9 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this@BusSelection)
 
-        val arsId = binding.searchBox2.text.toString()
+        //val arsId = binding.searchBox2.text.toString()
+        Log.d("Retrofit", "Request arsId: $arsId")
+
 
         val call = RetrofitObject.getRetrofitService.BusSelection(arsId)
 
@@ -53,11 +66,18 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
                 call: Call<List<RetrofitClient.ResponseBusSelection>>,
                 response: Response<List<RetrofitClient.ResponseBusSelection>>
             ) {
+                Log.d("Retrofit", "Response code: ${response.code()}")
+                Log.d("Retrofit", "Response body: ${response.body()}")
                 if (response.isSuccessful) {
-                    Log.d("status","connected11")
+                    Log.d("status", "connected11")
                     val busSelectionResponse = response.body()
                     val dataList1: List<RetrofitClient.ResponseBusSelection>? = busSelectionResponse
-                    binding.busList.adapter = BusSelection_adapter(dataList1)
+                    if (dataList1 != null) {
+                        binding.busList.adapter = BusSelection_adapter(dataList1, userId, busstop_name, arsId)
+                        binding.busList.adapter?.notifyDataSetChanged() // RecyclerView 갱신
+                    } else {
+                        Log.d("Retrofit", "Response body is null")
+                    }
                     initializeViews()
                 } else {
                     // 오류 처리
@@ -81,8 +101,8 @@ class BusSelection : AppCompatActivity(), OnMapReadyCallback {
         val positionLatLng = LatLng(locationLatLngEntity.latitude!!,locationLatLngEntity.longitude!!)
         val markerOption = MarkerOptions().apply {
             position(positionLatLng)
-            title("위치")
-            snippet("선택 정류장")
+            title("Location")
+            snippet("Selective stop")
         }
         googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL  // 지도 유형 설정
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(positionLatLng, 15f))  // 카메라 이동

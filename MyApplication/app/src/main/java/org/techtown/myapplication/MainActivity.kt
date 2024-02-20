@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.Manifest
 import android.os.AsyncTask
+import android.text.Editable
 import org.techtown.myapplication.Retrofit.LoginResponse
 import org.techtown.myapplication.Retrofit.ReservationData
 
@@ -38,16 +39,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var speechRecognizer: SpeechRecognizer
     private val RECORD_AUDIO_PERMISSION_CODE = 1
 
-    // 예약 정보를 담는 변수 선언
-    private var reservationData: ReservationData? = null
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // 음성인식 기능 구현 시작
 
         // 권한 설정
         requestPermission()
@@ -132,13 +127,6 @@ class MainActivity : AppCompatActivity() {
             val userData = response.data
             // 여기서 userData를 사용하여 세션 생성 또는 화면 전환 등을 수행할 수 있습니다.
 
-            // 예시로 성공한 경우 Toast 메시지 출력
-            Toast.makeText(
-                applicationContext,
-                "로그인 성공 - 사용자: ${userData?.name}",
-                Toast.LENGTH_SHORT
-            ).show()
-
             // 추가적인 로그
             Log.d("MainActivity", "로그인 성공 - 사용자: ${userData?.name}")
 
@@ -173,41 +161,8 @@ class MainActivity : AppCompatActivity() {
         // AsyncTask가 완료될 때까지 기다리지 않고 바로 다음으로 진행하지 않도록 수정
         val homeReservationResponse = checkReservationTask.get()
 
-        Toast.makeText(
-            applicationContext,
-            "예약 api가 실행되긴 하나봐",
-            Toast.LENGTH_SHORT
-        ).show()
-
         if (homeReservationResponse != null && homeReservationResponse.isSuccessful) {
             val response = homeReservationResponse.body()
-
-            /*
-            Toast.makeText(
-                applicationContext,
-                "예약 api 응답이 과연 오는가 두둥탁",
-                Toast.LENGTH_SHORT
-            ).show()*/
-
-            Toast.makeText(
-                applicationContext,
-                "로그인 성공 - 사용자: ${response?.data?.date}",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            /*
-            if (response?.detail == "예약 내역을 성공적으로 불러왔습니다") {
-                // 예약 내역이 있을 경우 ReservedActivity로 이동
-                val reservedIntent = Intent(this@MainActivity, Reserved::class.java)
-                startActivity(reservedIntent)
-                finish() // 현재 액티비티 종료
-            } else if (response?.detail == "예약 내역 존재하지 않습니다") {
-                // 예약 내역이 없을 경우 NoReservationActivity로 이동
-                val noReservationIntent = Intent(this@MainActivity, NoReservation::class.java)
-                startActivity(noReservationIntent)
-                finish() // 현재 액티비티 종료
-            }*/
-
 
             if (response?.data != null) {
                 // 예약 내역이 있을 경우 ReservedActivity로 이동
@@ -220,6 +175,7 @@ class MainActivity : AppCompatActivity() {
                 val noReservationIntent = Intent(this@MainActivity, NoReservation::class.java)
                 // 사용자 ID를 전달
                 noReservationIntent.putExtra("userId", userId)
+                Log.d("userIdCheck_mainActivity", "$userId")
                 startActivity(noReservationIntent)
                 finish() // 현재 액티비티 종료
             }
@@ -292,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                     // 사용자가 권한을 거부한 경우 메시지 표시 또는 다른 처리
                     Toast.makeText(
                         applicationContext,
-                        "음성인식 권한이 필요합니다.",
+                        "Voice recognition rights are required.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -305,7 +261,7 @@ class MainActivity : AppCompatActivity() {
     private val recognitionListener: RecognitionListener by lazy {
         object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle) {
-                Toast.makeText(applicationContext, "음성인식 시작", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Start voice recognition", Toast.LENGTH_SHORT).show()
                 binding.tvState.text = "이제 말씀하세요!"
             }
 
@@ -327,9 +283,9 @@ class MainActivity : AppCompatActivity() {
                     SpeechRecognizer.ERROR_CLIENT -> "클라이언트 에러"
                     SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
                         runOnUiThread {
-                            Toast.makeText(applicationContext, "음성인식 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(applicationContext, "Voice recognition rights are required.", Toast.LENGTH_SHORT).show()
                         }
-                        "퍼미션 없음"
+                        "No permission"
                     }
                     SpeechRecognizer.ERROR_NETWORK -> "네트워크 에러"
                     SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "네트웍 타임아웃"
@@ -337,7 +293,7 @@ class MainActivity : AppCompatActivity() {
                     SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> {
                         runOnUiThread {
                             Toast.makeText(applicationContext, "Recognition service busy. Retrying...", Toast.LENGTH_SHORT).show()
-                            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this@MainActivity)
+                            // SpeechRecognizer를 다시 초기화하고 음성인식을 다시 시작
                             speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this@MainActivity)
                             speechRecognizer.setRecognitionListener(recognitionListener)
                             speechRecognizer.startListening(intent)
@@ -353,18 +309,28 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                val resultText = matches?.joinToString("\n")
+                var resultText = matches?.get(0) ?: ""
+
+                // 공백 제거
+                resultText = resultText.replace("\\s".toRegex(), "")
 
                 runOnUiThread {
                     binding.textView7.text = resultText
+                    binding.membershipNumber.text = resultText.toEditable()
                     Log.d("MainActivity", "Recognition result: $resultText")
                 }
             }
+
 
             override fun onPartialResults(partialResults: Bundle) {}
 
             override fun onEvent(eventType: Int, params: Bundle) {}
         }
+    }
+
+    // String을 Editable로 변환하는 확장 함수 정의
+    private fun String?.toEditable(): Editable {
+        return Editable.Factory.getInstance().newEditable(this ?: "")
     }
 
     private fun initializeSpeechRecognizer() {

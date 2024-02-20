@@ -3,7 +3,6 @@ package org.techtown.myapplication.Retrofit
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import org.techtown.myapplication.Reservation
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -59,10 +58,11 @@ interface DropOffStopService {
     @Headers("Content-Type: application/json")
     @GET("/reservation/endst")
     fun getDropOffBusStops(
-        @Query("ardId") arsId: String?,
-        @Query("busRouteId") busRouteId: String?
+        @Query("arsId") arsId: String?,  // 올바른 쿼리 매개변수 이름 사용
+        @Query("busRouteId") busRouteId: String?  // 올바른 쿼리 매개변수 이름 사용
     ): Call<List<DropOffStop>>
 }
+
 
 data class ReservationRequest(
     val arsId: String,
@@ -86,21 +86,24 @@ object ApiManager_DropOffBusStop {
 //예약완료 기능
 // Reservation 클래스 파일
 data class ReservationComplete(
-    val boardingStop: String,
-    val dropStop: String,
-    val vehId: String,
-    val busRouteNm: String
+    val userId:Long?,
+    val boardingStop: String?, //승차정류장 고유 번호
+    val dropStop: String?, //하차정류장 고유 번호
+    val vehId: String?, //버스 Id
+    val busRouteNm: String? //버스 노선 번호
 )
 
 // ApiManager_Reservation 파일
 interface ApiManager_ReservationComplete {
-    @POST("/reservation")
+    @POST("/reservation/")
     fun createReservation(@Body reservation: ReservationComplete): Call<ApiResponse>
 
     companion object {
+        private const val BASE_URL = "http://34.64.189.150:8090/"
+
         fun create(): ApiManager_ReservationComplete {
             val retrofit = Retrofit.Builder()
-                .baseUrl("서버의_BASE_URL")  // 실제 서버의 BASE URL로 대체
+                .baseUrl(BASE_URL)  // 실제 서버의 BASE URL로 대체
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 

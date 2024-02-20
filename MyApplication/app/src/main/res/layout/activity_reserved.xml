@@ -4,24 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="#3F51B5">
+    android:backgroundTint="#3F51B5"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="16dp">
 
 
     <Button
         android:id="@+id/button_camera"
-        android:layout_width="140dp"
-        android:layout_height="74dp"
-        android:layout_marginTop="524dp"
+        android:layout_width="197dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="36dp"
         android:background="@drawable/radius"
         android:backgroundTint="#6E99F6"
         android:backgroundTintMode="src_over"
-        android:text="버스 확인용\n웹캠 화면 버튼"
+        android:text="Webcam for\nBus verification"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/button_status" />
+
+    <Button
+        android:id="@+id/button_status2"
+        android:layout_width="157dp"
+        android:layout_height="66dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="36dp"
+        android:layout_weight="0"
+        android:background="@drawable/radius"
+        android:backgroundTint="#6E99F6"
+        android:backgroundTintMode="src_over"
+        android:text="Dropping off Completed"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+
+    <Button
+        android:id="@+id/button_status"
+        android:layout_width="157dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="52dp"
+        android:layout_weight="0"
+        android:background="@drawable/radius"
+        android:backgroundTint="#6E99F6"
+        android:backgroundTintMode="src_over"
+        android:text="Riding completed"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
 
     <TextView
         android:id="@+id/menu"
@@ -53,6 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="128dp"
         android:background="@drawable/radius"
+        android:elevation="6dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -62,10 +97,10 @@
 
         <TextView
             android:id="@+id/date"
-            android:layout_width="144dp"
+            android:layout_width="132dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="  일시"
+            android:text="  Date"
             android:textSize="20sp" />
 
         <TextView
@@ -73,6 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:padding="5dp"
             android:text="일시"
             android:textColor="#000000"
             android:textSize="20sp" />
@@ -85,6 +121,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
+        android:elevation="6dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -93,10 +130,10 @@
 
         <TextView
             android:id="@+id/textView12"
-            android:layout_width="144dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="  탑승 정류장"
+            android:text="  Boarding Stop"
             android:textSize="20sp" />
 
         <TextView
@@ -104,6 +141,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:padding="5dp"
             android:text="탑승 정류장"
             android:textColor="#000000"
             android:textSize="20sp" />
@@ -116,6 +154,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
+        android:elevation="6dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -124,11 +163,11 @@
 
         <TextView
             android:id="@+id/textView15"
-            android:layout_width="144dp"
+            android:layout_width="133dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="0"
-            android:text="  버스 번호"
+            android:text="  Bus Number"
             android:textSize="20sp" />
 
         <TextView
@@ -137,6 +176,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:gravity="center"
+            android:padding="5dp"
             android:text="버스 번호"
             android:textColor="#000000"
             android:textSize="20sp" />
@@ -148,6 +188,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
+        android:elevation="6dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -156,11 +197,11 @@
 
         <TextView
             android:id="@+id/textView16"
-            android:layout_width="144dp"
+            android:layout_width="132dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="0"
-            android:text="  하차 정류장"
+            android:text="  Drop-off Stop"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -170,6 +211,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:padding="5dp"
             android:text="하차 정류장"
             android:textColor="#000000"
             android:textSize="20sp" />
@@ -181,6 +223,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/radius"
+        android:elevation="6dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -189,11 +232,11 @@
 
         <TextView
             android:id="@+id/textView8"
-            android:layout_width="144dp"
+            android:layout_width="133dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="0"
-            android:text="  승차 여부"
+            android:text="  Riding or not"
             android:textSize="20sp" />
 
         <TextView
@@ -201,40 +244,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:padding="5dp"
             android:text="승차 여부"
             android:textColor="#000000"
             android:textSize="20sp" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/button_status"
-        android:layout_width="112dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="472dp"
-        android:layout_weight="0"
-        android:background="@drawable/button_status_background"
-        android:text="승차 완료"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button_status2"
-        android:layout_width="112dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="472dp"
-        android:layout_marginEnd="64dp"
-        android:layout_weight="0"
-        android:background="@drawable/button_status_background"
-        android:text="하차 완료"
-        android:textColor="#000000"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

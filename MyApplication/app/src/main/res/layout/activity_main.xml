@@ -41,9 +41,10 @@
         android:backgroundTint="#EFEFEF"
         android:ems="10"
         android:inputType="text"
-        android:text="  발급 받은 회원 번호를 입력해주세요"
+        android:text="  Please enter the issued membership number"
         android:textColor="#827B7B"
         android:textColorHint="#827B7B"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="312dp"
-        android:text="회원 번호"
+        android:text="Membership Number"
         android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -64,26 +65,31 @@
         android:id="@+id/startButton"
         android:layout_width="150dp"
         android:layout_height="49dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:background="@drawable/radius"
         android:backgroundTint="#6E99F6"
         android:backgroundTintMode="src_over"
-        android:text="시작하기"
+        android:text="Start"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/membershipNumber" />
 
     <Button
         android:id="@+id/speakButton"
-        android:layout_width="74dp"
-        android:layout_height="63dp"
-        android:layout_marginTop="100dp"
-        android:background="@drawable/mike"
+        android:layout_width="150dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/radius"
+        android:backgroundTint="#6E99F6"
+        android:backgroundTintMode="src_over"
+        android:text="Voice"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/startButton" />
 
@@ -93,6 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="52dp"
         android:text="상태 체크"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,9 +111,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"
         android:text="TextView"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/speakButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/startButton"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

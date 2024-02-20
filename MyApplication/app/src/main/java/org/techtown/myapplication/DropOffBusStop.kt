@@ -34,6 +34,7 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.location.Criteria
 import android.location.Location
+import android.os.AsyncTask
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -43,7 +44,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.Marker
 import org.techtown.myapplication.Retrofit.ApiManager_BoardingBusStop
+import org.techtown.myapplication.Retrofit.ApiManager_homeReservation
 import org.techtown.myapplication.Retrofit.BoardingStop
+import org.techtown.myapplication.Retrofit.HomeReservationResponse
 
 class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
 
@@ -53,24 +56,44 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
     private var dropOffBusStops: List<DropOffStop>? = null
     private var selectedDropOffBusStop: DropOffStop? = null
     private var busStops: List<DropOffStop>? = null
-    private var userId: Long = -1L // 사용자 ID를 저장할 변수 추가
-    private var arsId_boarding: String? = null
-    private var busRouteId: String? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var busRouteAbrv : String? = null
+    private var vehId : String? = null
+    private var busRouteId  : String? = null
+    private var userId : Long? = null
+    private var arsId : String? = null
+    private var boardingBusStop : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityDropOffBusStopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        Log.e("drop11", "omg")
+
         val backButton = findViewById<Button>(R.id.backButton5)
         backButton.setOnClickListener {
-            val intent = Intent(this, NoReservation::class.java)
+            val intent = Intent(this, BusSelection::class.java)
             startActivity(intent)
         }
 
-        // Intent를 통해 전달된 데이터 받기
-        userId = intent.getLongExtra("userId", -1L) // 사용자 ID를 받아옴
+
+        // 이전 페이지에서 넘어온 데이터 받기
+        intent?.let { intent ->
+            busRouteAbrv = intent.getStringExtra("busRouteAbrv")
+            vehId = intent.getStringExtra("vehId")
+            busRouteId = intent.getStringExtra("busRouteId")
+            userId = intent.getLongExtra("userId", -1L)
+            arsId = intent.getStringExtra("arsId")
+            boardingBusStop = intent.getStringExtra("BoardingBusStop")
+            Log.d("userIdCheck", "$userId")
+
+            binding.selectedBusNum.text = busRouteAbrv
+            binding.selectedBoardingStop.text = boardingBusStop
+        } ?: run {
+            // 인텐트가 null인 경우 처리할 내용 추가
+            Log.e("IntentError", "Intent is null")
+        }
 
         val searchBox = findViewById<EditText>(R.id.searchBox_drop_off)
         searchBox.addTextChangedListener(object : TextWatcher {
@@ -111,7 +134,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                     )
                 }
                 .setNegativeButton("아니오") { dialog, id ->
-                    Toast.makeText(this, "위치 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Location permission denied.", Toast.LENGTH_SHORT).show()
                 }
             val alert = dialogBuilder.create()
             alert.setTitle("권한 요청")
@@ -137,7 +160,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                 } else {
                     Toast.makeText(
                         this,
-                        "위치 권한이 거부되었습니다.",
+                        "Location permission denied.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -170,9 +193,9 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                 Log.d("CurrentLocation", "Latitude: ${location.latitude}, Longitude: ${location.longitude}")
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                getDropOffBusStops(arsId_boarding, busRouteId)
+                getDropOffBusStops(arsId, busRouteId)
             } else {
-                Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Unable to get the current location.", Toast.LENGTH_SHORT).show()
             }
         } else {
             requestLocationPermission()
@@ -190,9 +213,6 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                         Log.d("OMG", "Successful response: ${response.body()}")
                         dropOffBusStops = response.body()
 
-                        val message = "주변 버스 정류장 수: ${dropOffBusStops?.size ?: 0}"
-                        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
-
                         dropOffBusStops?.let { busStops ->
                             for (busStop in busStops) {
                                 val busStopLatLng = LatLng(busStop.latitude, busStop.longitude)
@@ -208,7 +228,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                     } else {
                         // Handle unsuccessful response
                         // 실패한 응답을 로깅합니다.
-                        Log.e("OMG", "Unsuccessful response: ${response.code()}")
+                        Log.e("Ok", "Unsuccessful response: ${response.code()}")
                         Toast.makeText(applicationContext, "API 호출에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -256,10 +276,16 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
             cardView.addView(textView)
             resultContainer.addView(cardView)
 
-            // CardView를 클릭했을 때 BusSelection 페이지로 이동하는 클릭 리스너 추가
             cardView.setOnClickListener {
-                navigateToReservedPage()
+                if (busStop != null) {
+                    Log.d("BusStopInfo", "Clicked bus stop: ${busStop.name}, ARS 번호: ${busStop.arsId}")
+                    navigateToReservedPage(busStop)
+                } else {
+                    Log.e("ClickError", "busStop is null")
+                }
             }
+
+
 
             // CardView 크기 조정
             val params = cardView.layoutParams as LinearLayout.LayoutParams
@@ -288,12 +314,20 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
             textView.gravity = Gravity.CENTER_VERTICAL
             textView.setTextColor(Color.BLACK)
-            textView.setOnClickListener {
-                navigateToReservedPage()
-            }
 
             cardView.addView(textView)
             resultContainer.addView(cardView)
+
+            // CardView를 클릭했을 때 BusSelection 페이지로 이동하는 클릭 리스너 추가
+            cardView.setOnClickListener {
+                if (busStop != null) {
+                    //selectedDropOffBusStop = busStop // 클릭된 하차 정류장 설정
+                    Log.d("BusStopInfo", "Clicked bus stop: ${busStop.name}, ARS 번호: ${busStop.arsId}")
+                    navigateToReservedPage(busStop)
+                } else {
+                    Log.e("ClickError", "busStop is null")
+                }
+            }
 
             // CardView 크기 조정
             val params = cardView.layoutParams as LinearLayout.LayoutParams
@@ -302,13 +336,8 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    /*private fun navigateToDetailsActivity(busStop: DropOffStop) {
-        val intent = Intent(this, Reserved::class.java)
-        intent.putExtra("busStop", busStop)
-        startActivity(intent)
-    }*/
-
     private fun sendReservationToServer(reservation: ReservationComplete) {
+        Log.d("ReservationInfo_last", "BoardingStop: ${reservation.boardingStop}, DropStop: ${reservation.dropStop}, VehId: ${reservation.vehId}, BusRouteNm: ${reservation.busRouteNm}")
         val apiManager = ApiManager_ReservationComplete.create()
         // Retrofit을 사용하여 서버 통신을 위한 인터페이스 생성
 
@@ -316,7 +345,10 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
         apiManager.createReservation(reservation)
             .enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                    Log.d("Retrofit123", "Response code: ${response.code()}")
+                    Log.d("Retrofit123", "Response body: ${response.body()}")
                     if (response.isSuccessful) {
+                        Log.d("status12", "connected11")
                         // 서버 응답이 성공적으로 수신된 경우
                         val apiResponse = response.body()
 
@@ -325,6 +357,7 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                             // 성공적으로 예약이 생성된 경우
                             // apiResponse의 상세 정보에 따라 적절한 작업 수행
                             if (apiResponse.status == "CREATED") {
+                                checkReservation(userId)
                                 // 예약이 성공적으로 생성된 경우
                                 // 예약 성공 메시지를 사용자에게 보여줄 수 있습니다.
                                 showToast(apiResponse.detail)
@@ -337,14 +370,19 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
                     } else {
                         // 서버에서 오류 응답을 받음
                         // response.code(), response.message() 등을 활용하여 처리
-                        showToast("서버 오류: ${response.code()}")
+                        Log.e("RetrofitError", "Unsuccessful response: ${response.code()}")
+                        Toast.makeText(applicationContext, "API 호출에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                    if (response.body() == null) {
+                        Log.e("RetrofitError", "Response body is null")
                     }
                 }
 
                 override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
                     // 서버에 예약 정보 전송 실패
                     // 에러 메시지를 출력하거나 다른 예외 처리 작업을 수행
-                    showToast("예약 실패: ${t.message}")
+                    Log.e("RetrofitError", "API call failed", t)
+                    Toast.makeText(applicationContext, "API 호출에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             })
     }
@@ -355,37 +393,101 @@ class DropOffBusStop : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    private fun navigateToReservedPage() {
-        //확인창 띄우기
-        val builder = AlertDialog.Builder(this)
-
-        builder.setTitle("예약 확인창")
-            .setMessage("정말로 예약하시겠습니까?")
-            .setPositiveButton("네") { dialog, which ->
-                // 처리할 작업을 여기에 추가하세요.
-                // 예를 들어, 어떤 동작을 수행하거나 다른 함수를 호출할 수 있습니다.
-                // 예: performAction()
-                // 서버로 예약 정보 전송하기
-                // 예약 정보 생성
-                val reservation = ReservationComplete(
-                    boardingStop = "승차 정류소 고유 번호",  // TODO: 실제 데이터로 대체
-                    dropStop = selectedDropOffBusStop?.arsId ?: "",  // 수정된 부분
-                    vehId = "버스 ID",  // TODO: 실제 데이터로 대체
-                    busRouteNm = "버스 노선 번호"  // TODO: 실제 데이터로 대체
-                )
-
-                // 서버에 예약 정보 전송
-                sendReservationToServer(reservation)
-
-                //예약 페이지(Reserved 액티비티)로 이동
-                val intent = Intent(this, Reserved::class.java)
-                intent.putExtra("dropOffBusStop", selectedDropOffBusStop)
-                startActivity(intent)
+    private fun navigateToReservedPage(busStop:DropOffStop) {
+        Log.d("ClickEvent", "CardView clicked")
+        try {
+            if (busStop == null) {
+                Log.e("NavigationError", "selectedDropOffBusStop is null")
+                return // null 일 경우 함수 종료
             }
-            .setNegativeButton("아니요") { dialog, which ->
-                // 취소 또는 다른 작업을 수행할 수 있습니다.
+            // 여기에 예약 확인창 및 이동 관련 로직 추가
+            //확인창 띄우기
+            Log.d("BusStopInfo", "Clicked bus stop: ${busStop.name}, ARS 번호: ${busStop.arsId}")
+            Log.d("BusStopInfo", "$arsId")
+            Log.d("BusStopInfo", "$busRouteAbrv")
+            //Log.d("BusStopInfo", "Clicked bus stop: ${busStop.name}, ARS 번호: ${busStop.arsId}")
+            val builder = AlertDialog.Builder(this)
+
+            builder.setTitle("Booking confirmation window")
+                .setMessage("Would you really like to make a reservation?")
+                .setPositiveButton("Yes") { dialog, which ->
+
+                    val reservation = ReservationComplete(
+                        userId = userId,
+                        boardingStop = arsId,  //승차 정류소 고유 번호
+                        dropStop = busStop.arsId,
+                        vehId = "108018089",  //버스 ID
+                        busRouteNm = busRouteAbrv  //버스 노선 번호
+                    )
+
+                    Log.d("ReservationUserId", "$userId")
+
+                    // 서버에 예약 정보 전송
+                    sendReservationToServer(reservation)
+                }
+                .setNegativeButton("No") { dialog, which ->
+                    // 취소 또는 다른 작업을 수행할 수 있습니다.
+                }
+                .show()
+        } catch (e: Exception) {
+            Log.e("NavigationError", "Error navigating to Reserved page: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    // 예약 내역 확인 함수
+    private fun checkReservation(userId: Long?) {
+        // AsyncTask를 사용하여 백그라운드 스레드에서 네트워크 작업 실행
+        val checkReservationTask = CheckReservationTask()
+        checkReservationTask.execute(userId)
+
+        // AsyncTask가 완료될 때까지 기다리지 않고 바로 다음으로 진행하지 않도록 수정
+        val homeReservationResponse = checkReservationTask.get()
+
+        if (homeReservationResponse != null && homeReservationResponse.isSuccessful) {
+            val response = homeReservationResponse.body()
+
+            if (response?.data != null) {
+                // 예약 내역이 있을 경우 ReservedActivity로 이동
+                val reservedIntent = Intent(this, Reserved::class.java)
+                Log.d("lastpagereservationdata", "$response")
+                reservedIntent.putExtra("reservationData", response.data)
+                startActivity(reservedIntent)
+                finish() // 현재 액티비티 종료
+            } else {
+                /*
+                // 예약 내역이 없을 경우 NoReservationActivity로 이동
+                val noReservationIntent = Intent(this@MainActivity, NoReservation::class.java)
+                // 사용자 ID를 전달
+                noReservationIntent.putExtra("userId", userId)
+                startActivity(noReservationIntent)
+                finish() // 현재 액티비티 종료*/
             }
-            .show()
+        } else {
+            // 네트워크 작업 실패 시의 처리
+            // 실패 상황에 대한 메시지 또는 로직 추가
+            Toast.makeText(
+                applicationContext,
+                "예약 api 네트워크 작업 실패",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private inner class CheckReservationTask : AsyncTask<Long?, Void, Response<HomeReservationResponse>>() {
+
+        override fun doInBackground(vararg params: Long?): Response<HomeReservationResponse>? {
+            try {
+
+
+                // Retrofit을 사용하여 네트워크 호출
+                val service = ApiManager_homeReservation.create()
+                return service.getHomeReservation(params.firstOrNull()).execute()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
     }
 
     override fun onMapReady(gMap: GoogleMap) {
