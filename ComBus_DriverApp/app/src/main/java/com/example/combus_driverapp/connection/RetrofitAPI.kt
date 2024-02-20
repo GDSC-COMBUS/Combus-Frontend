@@ -16,5 +16,5 @@ interface RetrofitAPI {
     fun home(@Path("driverId") userId:Long):Call<RetrofitClient.responsehome>
 
     @GET("/drivers/home/busStop/{arsId}")
-    fun busstopDetail(@Path ("arsId") arsId:Long): Call<RetrofitClient.responsebusstopDetail>
+    fun busstopDetail(@Path ("arsId") arsId:String): Call<RetrofitClient.responsebusstopDetail>
 }

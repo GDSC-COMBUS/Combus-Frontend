@@ -96,19 +96,27 @@ class RetrofitClient {
     )
     data class busstopDetaildata(
         @SerializedName("boardingInfo")
-        val boardingInfo:List<detailInfolist>,
+        val boardingInfo:List<boardingdetailInfolist>,
         @SerializedName("boardingBlindCnt")
         val boardingBlindCnt:Int,
         @SerializedName("boardingWheelchairCnt")
         val boardingWheelchairCnt:Int,
         @SerializedName("dropInfo")
-        val dropInfo:List<detailInfolist>,
+        val dropInfo:List<offdetailInfolist>,
         @SerializedName("dropBlindCnt")
         val dropBlindCnt:Int,
         @SerializedName("dropWheelchairCnt")
         val dropWheelchairCnt:Int
     )
-    data class detailInfolist(
+    data class boardingdetailInfolist(
+        @SerializedName("type")
+        val type:String,
+        @SerializedName("boardingStop")
+        val boardingStop:String,
+        @SerializedName("dropStop")
+        val dropStop:String
+    )
+    data class offdetailInfolist(
         @SerializedName("type")
         val type:String,
         @SerializedName("boardingStop")

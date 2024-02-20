@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.combus_driverapp.connection.RetrofitClient
 import com.example.combus_driverapp.databinding.ActivityBusstopDetailBinding
@@ -23,9 +24,10 @@ class busstop_detail : AppCompatActivity() {
         val extras = intent.extras
         val busstop_name = extras!!.getString("busstop_name")
         val busstop_num = extras!!.getLong("busstop_num")
-        val boarding_num = extras!!.getInt("bording_num")
-        val drop_num = extras!!.getInt("drop_num")
-        val arsId = extras!!.getLong("arsId")
+        val boarding_num = extras!!.getInt("boarding_num").toString()
+        val drop_num = extras!!.getInt("drop_num").toString()
+        val get_arsId = extras!!.getLong("arsId")
+        val arsId = String.format("%05d", get_arsId)
 
         binding.txtBusstopName.text = busstop_name
         binding.txtBusstopNum.text = busstop_num.toString()
@@ -35,59 +37,55 @@ class busstop_detail : AppCompatActivity() {
 
         binding.txtBusstopOutNum.visibility = View.VISIBLE
         binding.txtBusstopOutNum.text = "Dropping off ${drop_num}"
-        /*if (boarding_num>0){
 
-        }
-        //else binding.txtBusstopBookNum.visibility = View.GONE
+        val call = RetrofitObject.getRetrofitService.busstopDetail(arsId)
+        call.enqueue(object : Callback<RetrofitClient.responsebusstopDetail>{
+            override fun onResponse(
+                call: Call<RetrofitClient.responsebusstopDetail>,
+                response: Response<RetrofitClient.responsebusstopDetail>
+            ) {
+                if (response.isSuccessful){
+                    Log.d("response","ok")
+                    val response = response.body()
+                    if (response != null){
+                        if (response.status == "OK"){
+                            Log.d("data",arsId.toString())
+                            Log.d("data",response.detail)
+                            Log.d("data",response.data.boardingInfo.toString())
+                            Log.d("data",response.data.dropInfo.toString())
+                            Log.d("data",response.data.boardingBlindCnt.toString())
+                            Log.d("data",response.data.dropBlindCnt.toString())
+                            Log.d("data",response.data.boardingWheelchairCnt.toString())
+                            Log.d("data",response.data.dropWheelchairCnt.toString())
+                            val detailboardingdata = response.data.boardingInfo
+                            val detaildropdata= response.data.dropInfo
+                            Log.d("data",detailboardingdata.toString())
+                            Log.d("data",detaildropdata.toString())
+                            binding.txtBusstopBookInforNum.text = "Blind person ${response.data.boardingBlindCnt} | Wheelchair ${response.data.boardingWheelchairCnt}"
+                            binding.txtBusstopOutInforNum.text = "Blind person ${response.data.dropBlindCnt} | Wheelchair ${response.data.dropWheelchairCnt}"
 
-        if (drop_num>0){
+                            binding.busstopBookRecycle.adapter = busstop_detail_book_adapter(detailboardingdata)
+                            binding.busstopOutRecycle.adapter = busstop_detail_alight_adapter(detaildropdata)
+                            val layoutManagerBook = LinearLayoutManager(this@busstop_detail)
+                            binding.busstopBookRecycle.layoutManager = layoutManagerBook
 
-        }*/
-        //else binding.txtBusstopOutNum.visibility = View.GONE
+                            val layoutManagerOut = LinearLayoutManager(this@busstop_detail)
+                            binding.busstopOutRecycle.layoutManager = layoutManagerOut
 
-        val retrofitService = RetrofitObject.getRetrofitService
-        val call = retrofitService.busstopDetail(arsId)
-
-        call.enqueue(object : Callback<RetrofitClient.responsebusstopDetail> {
-            override fun onResponse(call: Call<RetrofitClient.responsebusstopDetail>, response: Response<RetrofitClient.responsebusstopDetail>) {
-                if (response.isSuccessful) {
-                    // 서버로부터 응답을 성공적으로 받았을 때 처리
-                    val responseData = response.body()
-                    responseData?.let {
-                        // 데이터를 사용하여 UI 업데이트 또는 처리 작업 수행
-                        val detailboardingdata = responseData.data.boardingInfo
-                        val detaildropdata= responseData.data.dropInfo
-                        Log.d("data",detailboardingdata.toString())
-                        Log.d("data",detaildropdata.toString())
-
-                        binding.txtBusstopBookInforNum.text = "Blind person ${responseData.data.boardingBlindCnt} | Wheelchair ${responseData.data.boardingWheelchairCnt}"
-                        binding.txtBusstopOutInforNum.text = "Blind person ${responseData.data.dropBlindCnt} | Wheelchair ${responseData.data.dropWheelchairCnt}"
-
-                        binding.busstopBookRecycle.adapter = busstop_detail_book_adapter(detailboardingdata)
-                        binding.busstopOutRecycle.adapter = busstop_detail_alight_adapter(detaildropdata)
-
-                        initializeViews()
+                        }else{
+                            Toast.makeText(this@busstop_detail,response.detail, Toast.LENGTH_SHORT).show()
+                        }
                     }
-                } else {
+                }
+                else {
                     // 서버로부터 응답을 받지 못했을 때 처리
                     Log.d("Retrofit", "false")
                 }
             }
-
             override fun onFailure(call: Call<RetrofitClient.responsebusstopDetail>, t: Throwable) {
-                // 네트워크 오류 등의 이유로 서버에 요청을 보내지 못했을 때 처리
                 val errorMessage = "Call Failed: ${t.message} "
                 Log.d("Retrofit", errorMessage)
             }
         })
-
-
-    }
-    private fun initializeViews(){
-        //val LinearLayoutManager1 = LinearLayoutManager(this)
-        binding.busstopBookRecycle.layoutManager = LinearLayoutManager(this)
-
-        binding.busstopOutRecycle.layoutManager = LinearLayoutManager(this)
-
     }
 }

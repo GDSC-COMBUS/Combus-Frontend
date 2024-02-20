@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/x_icon" />
 
     <TextView
-        android:id="@+id/confirmTextView"
+        android:id="@+id/popup_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"

@@ -30,7 +30,7 @@ class Driver_Home : AppCompatActivity() {
     private val handler = Handler()
     private val interval: Long = 30 * 1000
     private lateinit var adapter: busstop_list_adapter // 어댑터 추가
-    private var arsId:Long = 0
+    private var arsId:Long = 0L
     private var stSeq:Int = 0
     private var stopFlag:Boolean = false
 
@@ -70,6 +70,7 @@ class Driver_Home : AppCompatActivity() {
                             if (response != null){
                                 if (response.status == "OK"){
                                     val busstopdata = response.data.busStopList
+                                    //val filteredBusStopData = busstopdata.filterNot { it.arsId.toString().isNullOrBlank() }
                                     //val busPosdata = listOf(response.data.busPos)
                                     arsId = response.data.busPosDto.arsId?: 0L
                                     stSeq = response.data.busPosDto.stSeq?.toInt() ?: 0
@@ -98,8 +99,8 @@ class Driver_Home : AppCompatActivity() {
                                             Log.e("NullPointerException", "busPos is null or stSeq is null")
                                         }
                                     }
-                                    else if (response.data.busPosDto?.stSeq!! > response.data.busStopList.size - 6){
-                                        stSeqInt = response.data.busStopList.size-3
+                                    else if (response.data.busPosDto?.stSeq!! > busstopdata.size - 6){
+                                        stSeqInt = busstopdata.size-3
                                         centerOfScreen = binding.pullScrean.height/2
                                         if (stSeqInt != null) {
                                             layoutManager.scrollToPositionWithOffset(stSeqInt, centerOfScreen)
@@ -114,29 +115,60 @@ class Driver_Home : AppCompatActivity() {
                                             Log.e("NullPointerException", "busPos is null or stSeq is null")
                                         }
                                     }
-
-
-
-
-                                    /*layoutManager.scrollToPositionWithOffset(
-                                        response.data.busPos.stSeq,
-                                        centerOfScreen
-                                    )*/
                                     var type = ""
-                                    if ((busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq-1].drop_cnt != 0)){
-                                        if (busstopdata[response.data.busPosDto.stSeq-1].wheelchair == true){
-                                            if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
-                                                type = "Blind person | Wheelchair"
+                                    if (response.data.busRouteName == "140"){
+                                        if (response.data.busPosDto.stSeq < 44){
+                                            if ((busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq-1].drop_cnt != 0)){
+                                                if (busstopdata[response.data.busPosDto.stSeq-1].wheelchair == true){
+                                                    if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
+                                                        type = "Blind person | Wheelchair"
+                                                    }
+                                                    else type = "Wheelchair"
+                                                }
+                                                else{
+                                                    if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
+                                                        type = "Blind person"
+                                                    }
+                                                }
+                                                dialog(busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt,busstopdata[response.data.busPosDto.stSeq-1].drop_cnt,type)
                                             }
-                                            else type = "Wheelchair"
                                         }
-                                        else{
-                                            if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
-                                                type = "Blind person"
+                                        else if(response.data.busPosDto.stSeq > 44){
+                                            if ((busstopdata[response.data.busPosDto.stSeq-2].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq-2].drop_cnt != 0)){
+                                                if (busstopdata[response.data.busPosDto.stSeq-2].wheelchair == true){
+                                                    if (busstopdata[response.data.busPosDto.stSeq-2].blind == true){
+                                                        type = "Blind person | Wheelchair"
+                                                    }
+                                                    else type = "Wheelchair"
+                                                }
+                                                else{
+                                                    if (busstopdata[response.data.busPosDto.stSeq-2].blind == true){
+                                                        type = "Blind person"
+                                                    }
+                                                }
+                                                dialog(busstopdata[response.data.busPosDto.stSeq-2].reserved_cnt,busstopdata[response.data.busPosDto.stSeq-2].drop_cnt,type)
                                             }
                                         }
-                                        dialog(busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt,busstopdata[response.data.busPosDto.stSeq-1].drop_cnt,type)
                                     }
+                                    else{
+                                        if (response.data.busPosDto.stSeq < 44){
+                                            if ((busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq-1].drop_cnt != 0)){
+                                                if (busstopdata[response.data.busPosDto.stSeq-1].wheelchair == true){
+                                                    if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
+                                                        type = "Blind person | Wheelchair"
+                                                    }
+                                                    else type = "Wheelchair"
+                                                }
+                                                else{
+                                                    if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
+                                                        type = "Blind person"
+                                                    }
+                                                }
+                                                dialog(busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt,busstopdata[response.data.busPosDto.stSeq-1].drop_cnt,type)
+                                            }
+                                        }
+                                    }
+
                                 }else{
                                     Toast.makeText(this@Driver_Home,response.detail, Toast.LENGTH_SHORT).show()
                                 }
@@ -154,7 +186,6 @@ class Driver_Home : AppCompatActivity() {
                 })
                 // 다음 요청을 예약합니다.
                 handler.postDelayed(this, interval)
-
             }
         })
     }
@@ -174,6 +205,9 @@ class Driver_Home : AppCompatActivity() {
         val out_num = mDialogView.findViewById<TextView>(R.id.textView9)
         val type_txt = mDialogView.findViewById<TextView>(R.id.next_type_txt)
         val nodialog = mDialogView.findViewById<ImageView>(R.id.imageView9)
+        val title = mDialogView.findViewById<TextView>(R.id.popup_title)
+
+        title.text = "Next Stop Information"
 
         boarding_num.text = boarding.toString()
         out_num.text = out.toString()
@@ -192,6 +226,6 @@ class Driver_Home : AppCompatActivity() {
                 }
                 timer.cancel() // 타이머 종료
             }
-        }, 30000) // 30초 후에 타이머 실행
+        }, 5000) // 30초 후에 타이머 실행
     }
 }

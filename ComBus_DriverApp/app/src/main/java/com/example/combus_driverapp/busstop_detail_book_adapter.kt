@@ -7,11 +7,11 @@ import com.example.combus_driverapp.connection.RetrofitClient
 import com.example.combus_driverapp.databinding.DetailListItemBinding
 import timber.log.Timber
 
-class busstop_detail_book_adapter(private val bookinglist: List<RetrofitClient.detailInfolist>):RecyclerView.Adapter<busstop_detail_book_adapter.detail_book_ViewHolder>() {
+class busstop_detail_book_adapter(private val bookinglist: List<RetrofitClient.boardingdetailInfolist>):RecyclerView.Adapter<busstop_detail_book_adapter.detail_book_ViewHolder>() {
 
     class detail_book_ViewHolder(val binding: DetailListItemBinding):
             RecyclerView.ViewHolder(binding.root){
-                fun bind(book:RetrofitClient.detailInfolist){
+                fun bind(book: RetrofitClient.boardingdetailInfolist){
                     binding.txtType.text = book.type
                     binding.txtIn.text = book.boardingStop
                     binding.txtOut.text = book.dropStop
