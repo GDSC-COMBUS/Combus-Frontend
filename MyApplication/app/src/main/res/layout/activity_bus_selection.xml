@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="5dp"
-            android:text="탑승정류장"
+            android:text="Boarding\nStop"
             android:textSize="20dp" />
 
         <TextView
@@ -74,7 +74,8 @@
             android:layout_marginLeft="5dp"
             android:backgroundTint="#EFEFEF"
             android:ems="10"
-            android:hint="탑승할 버스를 입력해주세요"
+            android:hint="Enter the bus you wish to board"
+            android:textSize="17sp"
             android:inputType="text"
             android:textColor="#827B7B"
             android:textColorHint="#827B7B" />

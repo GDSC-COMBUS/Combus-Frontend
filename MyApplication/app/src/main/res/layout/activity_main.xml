@@ -41,7 +41,7 @@
         android:backgroundTint="#EFEFEF"
         android:ems="10"
         android:inputType="text"
-        android:text="  발급 받은 회원 번호를 입력해주세요"
+        android:hint="  발급 받은 회원 번호를 입력해주세요"
         android:textColor="#827B7B"
         android:textColorHint="#827B7B"
         app:layout_constraintStart_toStartOf="parent"

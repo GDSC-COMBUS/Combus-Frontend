@@ -78,7 +78,6 @@ class Camera_page : AppCompatActivity() {
         }
 
         // Set up the listeners for take photo and video capture buttons
-        //binding.imageCaptureButton.setOnClickListener { openAlbum() }
         binding.videoCaptureButton.setOnClickListener {
             binding.busNumTxt.visibility = View.GONE
             captureVideo()
@@ -90,68 +89,6 @@ class Camera_page : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_VIDEO_REQUEST)
 
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_VIDEO_REQUEST) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val videoUri = data.data // 선택된 동영상의 URI를 가져옵니다.
-                val videoPath = videoUri?.path // 선택된 동영상의 파일 경로를 가져옵니다.
-
-                if (videoPath != null) {
-                    // 동영상 경로를 사용하여 추가 작업을 수행할 수 있습니다.
-                    // 여기서는 예를 들어 동영상 경로를 토스트 메시지로 표시합니다.
-                    //Toast.makeText(this, "Selected Video: $videoPath", Toast.LENGTH_SHORT).show()
-                    val file = File(videoPath)
-                    val mediaType = "video/mp4".toMediaType()
-                    val body1 = file.toString().toRequestBody(mediaType)
-                    //val requestFile = RequestBody.create(MediaType.parse("video/mp4"), file)
-                    val body = MultipartBody.Part.createFormData("videoFile", file.name, body1)
-
-                    val call = RetrofitObject.getRetrofitService.BusnumCamera(body,bus_num)
-
-                    call.enqueue(object : Callback<RetrofitClient.ResponseCamera> {
-                        override fun onResponse(
-                            call: Call<RetrofitClient.ResponseCamera>,
-                            response: Response<RetrofitClient.ResponseCamera>
-                        ) {
-                            if (response.isSuccessful){
-                                val response = response.body()
-                                if (response != null){
-                                    if (response.status == "OK"){
-                                        Log.e("Retrofit", response.status)
-                                        Toast.makeText(this@Camera_page,response.data.correct.toString(),Toast.LENGTH_SHORT).show()
-                                        if (response.data.correct == true){
-                                            binding.busNumTxt.text = "${bus_num}번 버스입니다."
-                                        }
-                                        else if(response.data.correct == false){
-                                            binding.busNumTxt.text = "${bus_num}번 버스가 아닙니다."
-                                        }
-                                    }else{
-                                    }
-                                }
-                            }
-                            else{
-                                Log.e("Retrofit", "fail")
-                                Toast.makeText(this@Camera_page,"fail",Toast.LENGTH_SHORT).show()}
-                        }
-                        override fun onFailure(call: Call<RetrofitClient.ResponseCamera>, t: Throwable) {
-                            val errorMessage = "Call Failed: ${t.message}"
-                            Log.e("Retrofit", errorMessage)
-                            Toast.makeText(this@Camera_page,errorMessage,Toast.LENGTH_SHORT).show()
-
-                        }
-                    })
-
-                } else {
-                    Toast.makeText(this, "Failed to retrieve video path", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, "Video selection cancelled", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -170,18 +107,6 @@ class Camera_page : AppCompatActivity() {
                 .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
                 .build()
             videoCapture = VideoCapture.withOutput(recorder)
-
-            /*imageCapture = ImageCapture.Builder()
-                .build()
-            val imageAnalyzer = ImageAnalysis.Builder()
-           .build()
-           .also {
-               it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                   Log.d(TAG, "Average luminosity: $luma")
-               })
-           }
-            */
-
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
