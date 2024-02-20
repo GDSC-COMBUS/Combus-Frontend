@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="Boarding\nStop"
+            android:gravity="center"
             android:textSize="20dp" />
 
 
@@ -67,7 +68,6 @@
             android:background="@android:color/transparent"
             android:backgroundTint="#EFEFEF"
             android:hint="Please enter the bus number"
-            android:textSize="17sp"
             android:inputType="text"
             android:textColor="#827B7B"
             android:textColorHint="#827B7B"
