@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.speech.tts.TextToSpeech
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.ImageCapture
 import androidx.camera.video.Recorder
@@ -61,10 +62,17 @@ class Camera_page : AppCompatActivity() {
 
     var bus_num:String = ""
     var videoUri: Uri? = null
+
+    // TextToSpeech 객체 선언
+    private lateinit var tts: TextToSpeech
+
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityCameraPageBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        // TextToSpeech 초기화
+        tts = TextToSpeech(this, this)
 
         val extras = intent.extras
         bus_num = extras!!.getString("bus_num").toString()
@@ -86,6 +94,29 @@ class Camera_page : AppCompatActivity() {
             //openAlbum()
             }
         cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    // TextToSpeech 초기화 완료 시 호출되는 콜백
+    fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // TextToSpeech 초기화 성공 시 설정
+            val locale = Locale("en", "US") // 영어 설정
+            val result = tts.setLanguage(locale)
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "The Language specified is not supported!")
+            } else {
+                // TTS 설정 완료 후 "승차정류장을 말씀해주세요" 음성 출력
+                //speakOut("Please tell me a boarding stop")
+            }
+        } else {
+            Log.e("TTS", "Initialization Failed!")
+        }
+    }
+
+    // 음성으로 메시지 출력하는 함수
+    private fun speakOut(text: String) {
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
     }
 
     private fun openAlbum() {
@@ -197,6 +228,12 @@ class Camera_page : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
+
+        // TextToSpeech 사용 후에는 반드시 종료해야 함
+        if (::tts.isInitialized) {
+            tts.stop()
+            tts.shutdown()
+        }
     }
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
@@ -338,11 +375,13 @@ class Camera_page : AppCompatActivity() {
                                 Toast.makeText(this@Camera_page,response.data.correct.toString(),Toast.LENGTH_SHORT).show()
                                 if (response.data.correct == true){
                                     binding.busNumTxt.visibility = View.VISIBLE
-                                    binding.busNumTxt.text = "${bus_num}번 버스입니다."
+                                    speakOut("This is bus number {$bus_num}")
+                                    binding.busNumTxt.text = "This is bus number {$bus_num}"
                                 }
                                 else if(response.data.correct == false){
                                     binding.busNumTxt.visibility = View.VISIBLE
-                                    binding.busNumTxt.text = "${bus_num}번 버스가 아닙니다."
+                                    speakOut("This is not bus number {$bus_num}")
+                                    binding.busNumTxt.text = "This is not bus number {$bus_num}"
                                 }
                             }else{
                             }
