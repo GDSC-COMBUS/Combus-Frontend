@@ -63,6 +63,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
         }
 
         userId = intent.getLongExtra("userId", -1L)
+        Log.d("userId", "$userId")
 
         val searchBox = findViewById<EditText>(R.id.searchBox_boarding)
         searchBox.addTextChangedListener(object : TextWatcher {
@@ -93,17 +94,17 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
     private fun requestLocationPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             val dialogBuilder = AlertDialog.Builder(this)
-            dialogBuilder.setMessage("이 앱을 사용하려면 위치 권한이 필요합니다. 권한을 부여하시겠습니까?")
+            dialogBuilder.setMessage("You need location permission to use this app. Do you want to grant permission?")
                 .setCancelable(false)
-                .setPositiveButton("네") { dialog, id ->
+                .setPositiveButton("Yes") { dialog, id ->
                     ActivityCompat.requestPermissions(
                         this@BoardingBusStop,
                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                         REQUEST_LOCATION_PERMISSION
                     )
                 }
-                .setNegativeButton("아니오") { dialog, id ->
-                    Toast.makeText(this, "위치 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+                .setNegativeButton("No") { dialog, id ->
+                    Toast.makeText(this, "Location permission denied.", Toast.LENGTH_SHORT).show()
                 }
             val alert = dialogBuilder.create()
             alert.setTitle("권한 요청")
@@ -129,7 +130,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
                 } else {
                     Toast.makeText(
                         this,
-                        "위치 권한이 거부되었습니다.",
+                        "Location permission denied.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -164,7 +165,7 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
                 getNearbyBusStops(location)
             } else {
-                Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Unable to get the current location.", Toast.LENGTH_SHORT).show()
             }
         } else {
             requestLocationPermission()
@@ -182,9 +183,6 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
                         // 성공적인 응답을 로깅합니다.
                         Log.d("OMG", "Successful response: ${response.body()}")
                         nearbyBusStops = response.body()
-
-                        val message = "주변 버스 정류장 수: ${nearbyBusStops?.size ?: 0}"
-                        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
 
                         nearbyBusStops?.let { busStops ->
                             for (busStop in busStops) {
@@ -309,6 +307,8 @@ class BoardingBusStop : AppCompatActivity(), OnMapReadyCallback {
         intent.putExtra("arsId", busStop.arsId) // arsId 전달
         intent.putExtra("gpsX", busStop.latitude) // gpsX 전달
         intent.putExtra("gpsY", busStop.longitude) // gpsY 전달
+        intent.putExtra("userId", userId)
+        Log.d("userIdCheck_boarding", "$userId")
         startActivity(intent)
     }
 
