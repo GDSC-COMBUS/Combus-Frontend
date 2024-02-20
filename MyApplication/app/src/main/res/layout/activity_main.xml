@@ -41,7 +41,7 @@
         android:backgroundTint="#EFEFEF"
         android:ems="10"
         android:inputType="text"
-        android:text="  Please enter the issued verification code"
+        android:hint="  Please enter the issued verification code"
         android:textColor="#827B7B"
         android:textColorHint="#827B7B"
         android:textSize="16sp"
