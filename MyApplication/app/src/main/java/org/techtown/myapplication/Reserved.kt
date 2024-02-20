@@ -72,7 +72,7 @@ class Reserved : AppCompatActivity() {
                 }
             }
         }
-        Toast.makeText(this, reservationData!!.busRouteName.toString(),Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, reservationData!!.busRouteName.toString(),Toast.LENGTH_SHORT).show()
         binding.buttonCamera.setOnClickListener {
             val intent = Intent(this,Camera_page::class.java)
             intent.putExtra("bus_num", reservationData?.busRouteName.toString())
