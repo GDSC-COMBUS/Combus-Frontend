@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -20,6 +22,7 @@ import retrofit2.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.*
 import kotlin.properties.Delegates
 
 class Driver_Home : AppCompatActivity() {
@@ -79,8 +82,8 @@ class Driver_Home : AppCompatActivity() {
                                     adapter.updateData(busstopdata,stSeq,stopFlag)
                                     binding.bussropRecycle.adapter = busstop_list_adapter(busstopdata,stSeq,stopFlag)
                                     binding.txtBusnum.text = response.data.busRouteName
-                                    binding.txtBusBookNum.text = "예약 ${response.data.totalReserved}"
-                                    binding.txtBusOutNum.text = "하차 ${response.data.totalDrop}"
+                                    binding.txtBusBookNum.text = "Reservation ${response.data.totalReserved}"
+                                    binding.txtBusOutNum.text = "Dropping off ${response.data.totalDrop}"
 
                                     val layoutManager = LinearLayoutManager(this@Driver_Home)
                                     binding.bussropRecycle.layoutManager = layoutManager
@@ -96,8 +99,8 @@ class Driver_Home : AppCompatActivity() {
                                         }
                                     }
                                     else if (response.data.busPosDto?.stSeq!! > response.data.busStopList.size - 6){
-                                        stSeqInt = response.data.busStopList.size
-                                        centerOfScreen = binding.pullScrean.height - (binding.bussropRecycle.height/7)
+                                        stSeqInt = response.data.busStopList.size-3
+                                        centerOfScreen = binding.pullScrean.height/2
                                         if (stSeqInt != null) {
                                             layoutManager.scrollToPositionWithOffset(stSeqInt, centerOfScreen)
                                         } else {
@@ -123,13 +126,13 @@ class Driver_Home : AppCompatActivity() {
                                     if ((busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt != 0) or (busstopdata[response.data.busPosDto.stSeq-1].drop_cnt != 0)){
                                         if (busstopdata[response.data.busPosDto.stSeq-1].wheelchair == true){
                                             if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
-                                                type = "시각장애인 | 휠체어"
+                                                type = "Blind person | Wheelchair"
                                             }
-                                            else type = "휠체어"
+                                            else type = "Wheelchair"
                                         }
                                         else{
                                             if (busstopdata[response.data.busPosDto.stSeq-1].blind == true){
-                                                type = "시각장애인"
+                                                type = "Blind person"
                                             }
                                         }
                                         dialog(busstopdata[response.data.busPosDto.stSeq-1].reserved_cnt,busstopdata[response.data.busPosDto.stSeq-1].drop_cnt,type)
@@ -165,14 +168,30 @@ class Driver_Home : AppCompatActivity() {
         val mDialogView = LayoutInflater.from(this).inflate(R.layout.popup,null)
         val mBuilder = AlertDialog.Builder(this)
             .setView(mDialogView)
+        val mAlertDialog = mBuilder.show()
+
         val boarding_num = mDialogView.findViewById<TextView>(R.id.textView7)
         val out_num = mDialogView.findViewById<TextView>(R.id.textView9)
         val type_txt = mDialogView.findViewById<TextView>(R.id.next_type_txt)
+        val nodialog = mDialogView.findViewById<ImageView>(R.id.imageView9)
 
         boarding_num.text = boarding.toString()
         out_num.text = out.toString()
         type_txt.text = type
 
-        mBuilder.show()
+        nodialog.setOnClickListener {
+            mAlertDialog.dismiss()
+        }
+        // 타이머 설정
+        val timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                // 팝업을 UI 쓰레드에서 다루기 위해 runOnUiThread 사용
+                runOnUiThread {
+                    mAlertDialog.dismiss()
+                }
+                timer.cancel() // 타이머 종료
+            }
+        }, 30000) // 30초 후에 타이머 실행
     }
 }
