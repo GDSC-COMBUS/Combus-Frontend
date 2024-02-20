@@ -35,6 +35,15 @@
             android:name=".Camera_page"
             android:exported="false" />
         <activity
+            android:name=".DropOffBusStopSTT"
+            android:exported="false" />
+        <activity
+            android:name=".BusSelectionSTT"
+            android:exported="false" />
+        <activity
+            android:name=".BoardingBusStopSTT"
+            android:exported="false" />
+        <activity
             android:name=".NoReservation"
             android:exported="false" />
         <activity

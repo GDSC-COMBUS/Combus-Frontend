@@ -85,8 +85,8 @@ interface HomeReservationService {
     @GET("users/home/{userId}") // URL 경로에 userId 포함
     fun getHomeReservation(@Path("userId") userId: Long?): Call<HomeReservationResponse>
 
-    @PUT("update-reservation-status")
-    fun updateReservationStatus(@Query("reservationId") reservationId: Long?, @Query("newStatus") newStatus: String): Call<HomeReservationResponse>
+    @PUT("users/home/{reservationId}")
+    fun updateReservationStatus(@Path("reservationId") reservationId: Long?): Call<HomeReservationResponse>
 }
 
 class ApiManager_homeReservation {
@@ -121,9 +121,9 @@ class ApiManager_homeReservation {
             userCookie = cookie
         }
 
-        fun updateReservationStatus(reservationId: Long?, newStatus: String): Call<HomeReservationResponse> {
+        fun updateReservationStatus(reservationId: Long?): Call<HomeReservationResponse> {
             val service = create()
-            return service.updateReservationStatus(reservationId, newStatus)
+            return service.updateReservationStatus(reservationId)
         }
     }
 }
