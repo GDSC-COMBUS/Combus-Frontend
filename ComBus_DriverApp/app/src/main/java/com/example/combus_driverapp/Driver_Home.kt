@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -208,10 +209,12 @@ class Driver_Home : AppCompatActivity() {
         val title = mDialogView.findViewById<TextView>(R.id.popup_title)
 
         title.text = "Next Stop Information"
+        title.visibility = View.VISIBLE
 
         boarding_num.text = boarding.toString()
         out_num.text = out.toString()
         type_txt.text = type
+        type_txt.visibility = View.VISIBLE
 
         nodialog.setOnClickListener {
             mAlertDialog.dismiss()
