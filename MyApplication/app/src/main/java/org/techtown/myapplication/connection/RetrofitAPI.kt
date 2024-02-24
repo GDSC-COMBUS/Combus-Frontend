@@ -19,4 +19,11 @@ interface RetrofitAPI {
         @Part videoFile: MultipartBody.Part,
         @Query("busRouteNm") busRouteNm: String?
         ): Call<RetrofitClient.ResponseCamera>
+    @Multipart
+    @POST("/image")
+    fun BusnumPhoto(
+        @Part file: MultipartBody.Part,
+        @Query("busRouteNm") busRouteNm: String?
+    ): Call<RetrofitClient.ResponseCamera>
+
 }
