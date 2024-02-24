@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_marginLeft="17dp"
+    android:layout_marginRight="17dp"
+    android:background="@drawable/popup_dialog"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="wrap_content"
+        android:layout_gravity="right"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/x_icon" />
+
+    <TextView
+        android:id="@+id/popup_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:fontFamily="@font/aldrich"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        tools:text="Next Stop Information" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reservation"
+                android:textColor="@color/busspot_gray"
+                android:textSize="18sp"
+                android:fontFamily="@font/aldrich"
+                android:layout_marginBottom="20dp"
+                />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/aldrich"
+                android:text="Drop off"
+                android:textColor="@color/busspot_gray"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/next_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Type"
+                android:textColor="@color/busspot_gray"
+                android:textSize="18sp"
+                android:fontFamily="@font/aldrich"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/popup_line"
+            android:layout_marginLeft="28dp"
+            android:layout_marginBottom="10dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginLeft="28dp"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3명"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/aldrich"
+                android:layout_marginBottom="20dp"/>
+
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1명"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/aldrich"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:id="@+id/next_type_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="시각장애인 | 휠체어"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/aldrich"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
