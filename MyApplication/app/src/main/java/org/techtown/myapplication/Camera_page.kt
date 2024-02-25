@@ -3,8 +3,11 @@ package org.techtown.myapplication
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -34,8 +37,10 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.core.content.PermissionChecker
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import org.techtown.myapplication.connection.RetrofitClient
@@ -44,12 +49,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import android.util.Base64
+import java.io.InputStream
+
 
 typealias LumaListener = (luma: Double) -> Unit
 class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
+    private val REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE = 1001
     private lateinit var binding: ActivityCameraPageBinding
 
     private var imageCapture: ImageCapture? = null
@@ -76,7 +86,6 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         val extras = intent.extras
         bus_num = extras!!.getString("bus_num").toString()
-        //bus_num = "303"
 
         binding.busNumTxt.visibility = View.GONE
 
@@ -89,11 +98,9 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         // Set up the listeners for take photo and video capture buttons
         binding.videoCaptureButton.setOnClickListener {
-            //binding.busNumTxt.visibility = View.GONE
-            //captureVideo()
-            //openAlbum()
-            takePhoto()
-            }
+            binding.busNumTxt.visibility = View.GONE
+            captureVideo()
+        }
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
@@ -119,74 +126,6 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
     private fun speakOut(text: String) {
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
     }
-
-    private fun openAlbum() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_VIDEO_REQUEST)
-
-    }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == PICK_VIDEO_REQUEST) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val videoUri = data.data // 선택된 동영상의 URI를 가져옵니다.
-                val videoPath = videoUri?.path // 선택된 동영상의 파일 경로를 가져옵니다.
-
-                if (videoPath != null) {
-                    // 동영상 경로를 사용하여 추가 작업을 수행할 수 있습니다.
-                    // 여기서는 예를 들어 동영상 경로를 토스트 메시지로 표시합니다.
-                    Toast.makeText(this, "Selected Video: $videoPath", Toast.LENGTH_SHORT).show()
-                    val file = File(videoPath)
-                    val mediaType = "video/mp4".toMediaType()
-                    val body1 = file.toString().toRequestBody(mediaType)
-                    //val requestFile = RequestBody.create(MediaType.parse("video/mp4"), file)
-                    val body = MultipartBody.Part.createFormData("videoFile", file.name, body1)
-
-                    val call = RetrofitObject.getRetrofitService.BusnumCamera(body,bus_num)
-
-                    call.enqueue(object : Callback<RetrofitClient.ResponseCamera> {
-                        override fun onResponse(
-                            call: Call<RetrofitClient.ResponseCamera>,
-                            response: Response<RetrofitClient.ResponseCamera>
-                        ) {
-                            if (response.isSuccessful){
-                                val response = response.body()
-                                if (response != null){
-                                    if (response.status == "OK"){
-                                        Log.e("Retrofit", response.status)
-                                        Log.e("Retrofit",response.data.correct.toString())
-                                        Toast.makeText(this@Camera_page,response.data.correct.toString(),Toast.LENGTH_SHORT).show()
-                                        if (response.data.correct == true){
-                                            binding.busNumTxt.visibility = View.VISIBLE
-                                            binding.busNumTxt.text = "${bus_num}번 버스입니다."
-                                        }
-                                        else if(response.data.correct == false){
-                                            binding.busNumTxt.visibility = View.VISIBLE
-                                            binding.busNumTxt.text = "${bus_num}번 버스가 아닙니다."
-                                        }
-                                    }else{
-                                    }
-                                }
-                            }
-                            else{
-                                Log.e("Retrofit", "fail")
-                                Toast.makeText(this@Camera_page,"fail",Toast.LENGTH_SHORT).show()}
-                        }
-                        override fun onFailure(call: Call<RetrofitClient.ResponseCamera>, t: Throwable) {
-                            val errorMessage = "Call Failed: ${t.message}"
-                            Log.e("Retrofit", errorMessage)
-                            Toast.makeText(this@Camera_page,errorMessage,Toast.LENGTH_SHORT).show()
-                        }
-                    })
-                } else {
-                    Toast.makeText(this, "Failed to retrieve video path", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, "Video selection cancelled", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -200,9 +139,6 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
                 .also {
                     it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
                 }
-            //
-            imageCapture = ImageCapture.Builder().build()
-            //
 
             val recorder = Recorder.Builder()
                 .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
@@ -215,13 +151,8 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
-                //
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture)
-                //
-
                 // Bind use cases to camera
-                //cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture)
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, videoCapture)
 
             } catch(exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
@@ -245,21 +176,6 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
             tts.shutdown()
         }
     }
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera()
-            } else {
-                Toast.makeText(this,
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        }
-    }
 
     companion object {
         private const val TAG = "CameraXApp"
@@ -275,9 +191,38 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
                 }
             }.toTypedArray()
     }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        } else if (requestCode == REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 파일 액세스 권한이 부여된 경우
+                captureVideo()
+            } else {
+                // 권한이 거부된 경우
+                Toast.makeText(this, "파일 액세스 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     // Implements VideoCapture use case, including start and stop capturing.
     private fun captureVideo() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // 액세스 권한 요청
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_CODE_PERMISSION_WRITE_EXTERNAL_STORAGE)
+            return
+        }
         val videoCapture = this.videoCapture ?: return
 
         binding.videoCaptureButton.isEnabled = false
@@ -332,21 +277,22 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
                             Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT)
                                 .show()
                             Log.d(TAG, msg)
-                            binding.videoCaptureButton.apply {
-                                text = getString(R.string.start_capture)
-                                background = getDrawable(R.drawable.button_status_background)
-                                setTextColor(Color.BLACK)
-                                isEnabled = true
-                            }
-                            videoUri = recordEvent.outputResults.outputUri
 
-                            } else {
+
+                        } else {
                             recording?.close()
                             recording = null
                             Log.e(TAG, "Video capture ends with error: " +
                                     "${recordEvent.error}")
                         }
-                        connect_camera(videoUri!!)
+                        binding.videoCaptureButton.apply {
+                            text = getString(R.string.start_capture)
+                            background = getDrawable(R.drawable.button_status_background)
+                            setTextColor(Color.BLACK)
+                            isEnabled = true
+                        }
+                        videoUri = recordEvent.outputResults.outputUri
+                        connect_camera(videoUri!!,this)
                         val contentResolver = applicationContext.contentResolver
                         contentResolver.delete(videoUri!!, null, null) // 동영상 파일 삭제
                     }
@@ -355,100 +301,53 @@ class Camera_page : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     }
 
-    fun connect_camera(videoUri:Uri){
-         // 선택된 동영상의 URI를 가져옵니다.
-        val videoPath = videoUri?.path // 선택된 동영상의 파일 경로를 가져옵니다.
+    fun connect_camera(videoUri:Uri,context:Context){
+        val inputStream = context.contentResolver.openInputStream(videoUri)
+        val tempFile = File.createTempFile("prefix", "extension")
+        tempFile.outputStream().use {
+            inputStream?.copyTo(it)
+        }
+        val mediaType = "video/mp4".toMediaTypeOrNull()
+        val requestBody = tempFile.asRequestBody(mediaType)
+        val body = MultipartBody.Part.createFormData("videoFile", tempFile.name, requestBody)
 
-        if (videoPath != null) {
-            // 동영상 경로를 사용하여 추가 작업을 수행할 수 있습니다.
-            // 여기서는 예를 들어 동영상 경로를 토스트 메시지로 표시합니다.
-            //Toast.makeText(this, "Selected Video: $videoPath", Toast.LENGTH_SHORT).show()
-            val file = File(videoPath)
-            val mediaType = "video/mp4".toMediaType()
-            val body1 = file.toString().toRequestBody(mediaType)
-            //val requestFile = RequestBody.create(MediaType.parse("video/mp4"), file)
-            val body = MultipartBody.Part.createFormData("videoFile", file.name, body1)
-
-            val call = RetrofitObject.getRetrofitService.BusnumCamera(body,bus_num)
-
-            call.enqueue(object : Callback<RetrofitClient.ResponseCamera> {
-                override fun onResponse(
-                    call: Call<RetrofitClient.ResponseCamera>,
-                    response: Response<RetrofitClient.ResponseCamera>
-                ) {
-                    if (response.isSuccessful){
-                        val response = response.body()
-                        if (response != null){
-                            if (response.status == "OK"){
-                                Log.e("Retrofit", response.status)
-                                Log.e("Retrofit",response.data.correct.toString())
-                                Toast.makeText(this@Camera_page,response.data.correct.toString(),Toast.LENGTH_SHORT).show()
-                                if (response.data.correct == true){
-                                    binding.busNumTxt.visibility = View.VISIBLE
-                                    speakOut("This is bus number {$bus_num}")
-                                    binding.busNumTxt.text = "This is bus number {$bus_num}"
-                                }
-                                else if(response.data.correct == false){
-                                    binding.busNumTxt.visibility = View.VISIBLE
-                                    speakOut("This is not bus number {$bus_num}")
-                                    binding.busNumTxt.text = "This is not bus number {$bus_num}"
-                                }
-                            }else{
+        val call = RetrofitObject.getRetrofitService.BusnumCamera(body, bus_num)
+        call.enqueue(object : Callback<RetrofitClient.ResponseCamera> {
+            override fun onResponse(
+                call: Call<RetrofitClient.ResponseCamera>,
+                response: Response<RetrofitClient.ResponseCamera>
+            ) {
+                if (response.isSuccessful){
+                    val response = response.body()
+                    if (response != null){
+                        if (response.status == "OK"){
+                            Log.e("Retrofit", response.status)
+                            Log.e("Retrofit",response.data.correct.toString())
+                            //Toast.makeText(this@Camera_page,response.data.correct.toString(),Toast.LENGTH_SHORT).show()
+                            if (response.data.correct == true){
+                                binding.busNumTxt.visibility = View.VISIBLE
+                                speakOut("This is bus number $bus_num")
+                                binding.busNumTxt.text = "This is bus number $bus_num"
                             }
+                            else if(response.data.correct == false){
+                                binding.busNumTxt.visibility = View.VISIBLE
+                                speakOut("This is not bus number $bus_num")
+                                binding.busNumTxt.text = "This is not bus number $bus_num"
+                            }
+                        }else{
                         }
                     }
-                    else{
-                        Log.e("Retrofit", "fail")
-                        Toast.makeText(this@Camera_page,"fail",Toast.LENGTH_SHORT).show()}
                 }
-                override fun onFailure(call: Call<RetrofitClient.ResponseCamera>, t: Throwable) {
-                    val errorMessage = "Call Failed: ${t.message}"
-                    Log.e("Retrofit", errorMessage)
-                    Toast.makeText(this@Camera_page,errorMessage,Toast.LENGTH_SHORT).show()
-
-                }
-            })
-    }}
-
-    private fun takePhoto() {
-        // Get a stable reference of the modifiable image capture use case
-        val imageCapture = imageCapture ?: return
-
-        // Create time stamped name and MediaStore entry.
-        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-            .format(System.currentTimeMillis())
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+                else{
+                    Log.e("Retrofit", "fail")
+                    Toast.makeText(this@Camera_page,"fail",Toast.LENGTH_SHORT).show()}
             }
-        }
+            override fun onFailure(call: Call<RetrofitClient.ResponseCamera>, t: Throwable) {
+                val errorMessage = "Call Failed: ${t.message}"
+                Log.e("Retrofit", errorMessage)
+                Toast.makeText(this@Camera_page,errorMessage,Toast.LENGTH_SHORT).show()
 
-        // Create output options object which contains file + metadata
-        val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues)
-            .build()
-
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
-                }
-
-                override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults){
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
-                }
             }
-        )
+        })
     }
 }
