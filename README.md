@@ -65,5 +65,5 @@ Bus Reservation Verification Service
 ## 🖥️ Program Used
 - Android Studio
 
-💿[설치 방법](https://developer.android.com/codelabs/basic-android-kotlin-compose-install-android-studio?hl=ko#0)
+💿[How to install](https://developer.android.com/codelabs/basic-android-kotlin-compose-install-android-studio?hl=ko#0)
 
