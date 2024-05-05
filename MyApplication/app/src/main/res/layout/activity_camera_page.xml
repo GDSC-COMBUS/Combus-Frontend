@@ -17,18 +17,6 @@
         android:layout_marginBottom="200dp"/>
 
 
-    <Button
-        android:id="@+id/video_capture_button"
-        android:layout_width="300dp"
-        android:layout_height="35dp"
-        android:layout_marginBottom="120dp"
-        android:background="@drawable/button_status_background"
-        android:elevation="2dp"
-        android:text="@string/start_capture"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <TextView
         android:id="@+id/bus_num_txt"
         android:layout_width="wrap_content"
@@ -38,12 +26,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="100dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:textColor="@color/black"
         android:textSize="20sp"
-        android:text="해당 예약버스가 아닙니다."
+        android:text="This bus number is 370."
         />
 
     <androidx.constraintlayout.widget.Guideline
